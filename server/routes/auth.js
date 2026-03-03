@@ -15,10 +15,16 @@ router.post('/setup-admin-initial', async (req, res) => {
         const bcrypt = (await import('bcryptjs')).default;
 
         const email = 'tiskstaff@tiskems.edu.in';
-        const existing = await User.findOne({ email });
-        if (existing) return res.json({ success: true, message: 'Already exists' });
-
         const hashedPassword = await bcrypt.hash('tiskems@321', 10);
+
+        const existing = await User.findOne({ email });
+        if (existing) {
+            existing.password = hashedPassword;
+            existing.role = 'admin'; // Ensure role is correct
+            await existing.save();
+            return res.json({ success: true, message: 'Admin updated successfully' });
+        }
+
         await User.create({
             name: 'TISK Admin',
             email,
