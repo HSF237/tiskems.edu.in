@@ -3,8 +3,7 @@ import mongoose from 'mongoose';
 const tcSchema = new mongoose.Schema({
   tcNumber: {
     type: String,
-    unique: true,
-    required: true
+    unique: true
   },
   studentName: {
     type: String,
