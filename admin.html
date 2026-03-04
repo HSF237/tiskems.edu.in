@@ -282,12 +282,16 @@
 
             <!-- Gallery Panel -->
             <div id="gallery-panel" class="upload-section active">
+                <div class="input-group">
+                    <label>Image Title / Event Name (e.g. Holi, Eid, Sports Day)</label>
+                    <input type="text" id="gallery-title" placeholder="Enter a description for the image">
+                </div>
                 <div class="drop-zone" onclick="uploadGallery()">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <h3>Click to Upload Images</h3>
-                    <p>Select multiple images for the school gallery</p>
+                    <p>Select an image to add it to the school gallery</p>
                 </div>
-                <h3>Current Gallery (Mock)</h3>
+                <h3>Current Gallery Content</h3>
                 <div id="gallery-list" class="mock-list"></div>
             </div>
 
@@ -296,6 +300,14 @@
                 <div class="input-group">
                     <label>Student Admission Number</label>
                     <input type="text" id="tc-adm" placeholder="e.g. 2024-001">
+                </div>
+                <div class="input-group">
+                    <label>Student Full Name</label>
+                    <input type="text" id="tc-name" placeholder="Enter student's full name">
+                </div>
+                <div class="input-group">
+                    <label>Class</label>
+                    <input type="text" id="tc-class" placeholder="e.g. X-A">
                 </div>
                 <div class="drop-zone" onclick="uploadTC()">
                     <i class="fas fa-file-pdf"></i>
@@ -311,9 +323,10 @@
     </div>
 
     <script>
-        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:5001/api'
-            : 'https://tisk-backend.onrender.com/api';
+        const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5001'
+            : 'https://tisk-backend.onrender.com';
+        const API_URL = `${BASE_URL}/api`;
         let currentUser = null;
         let token = localStorage.getItem('tisk_token');
 
@@ -414,6 +427,9 @@
         // --- Actual Upload Logic ---
 
         async function uploadGallery() {
+            const titleInput = document.getElementById('gallery-title');
+            const title = titleInput.value.trim() || 'Gallery Image';
+
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = 'image/*';
@@ -421,7 +437,8 @@
                 const file = fileInput.files[0];
                 const formData = new FormData();
                 formData.append('image', file);
-                formData.append('title', 'Gallery Image');
+                formData.append('title', title);
+                formData.append('description', title);
 
                 try {
                     const res = await fetch(`${API_URL}/gallery`, {
@@ -432,6 +449,7 @@
                     const data = await res.json();
                     if (data.success) {
                         alert('Image uploaded successfully');
+                        titleInput.value = '';
                         loadData('gallery');
                     } else {
                         alert(data.message);
@@ -444,11 +462,13 @@
         }
 
         async function uploadTC() {
-            const adm = document.getElementById('tc-adm').value;
-            const name = prompt('Enter Student Full Name:');
-            const studentClass = prompt('Enter Class:');
+            const adm = document.getElementById('tc-adm').value.trim();
+            const name = document.getElementById('tc-name').value.trim();
+            const studentClass = document.getElementById('tc-class').value.trim();
 
-            if (!adm || !name || !studentClass) return alert('Admission No, Name and Class are required');
+            if (!adm || !name || !studentClass) {
+                return alert('Please fill in Admission Number, Name, and Class before uploading.');
+            }
 
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
@@ -471,6 +491,9 @@
                     const data = await res.json();
                     if (data.success) {
                         alert('TC uploaded successfully');
+                        document.getElementById('tc-adm').value = '';
+                        document.getElementById('tc-name').value = '';
+                        document.getElementById('tc-class').value = '';
                         loadData('tc');
                     } else {
                         alert(data.message);
@@ -490,17 +513,18 @@
                 list.innerHTML = items.map(item => `
                     <div class="mock-item">
                         <button class="delete-btn" onclick="removeItem('gallery', '${item._id}')">×</button>
-                        <img src="${API_URL}/${item.filePath}">
-                        <p style="font-size:0.7rem">${item.title || 'No Title'}</p>
+                        <img src="${BASE_URL}/${item.filePath.replace(/\\/g, '/')}">
+                        <p style="font-size:0.75rem; font-weight:600; margin-top:5px;">${item.title || 'Untitled'}</p>
                     </div>
                 `).join('');
             } else if (type === 'tc') {
                 list.innerHTML = items.map(item => `
                     <div class="mock-item">
                         <button class="delete-btn" onclick="removeItem('tc', '${item._id}')">×</button>
-                        <i class="fas fa-file-pdf" style="font-size: 2rem; color: #dc2626;"></i>
-                        <p style="font-size:0.8rem; margin-top:5px;">Adm: ${item.admissionNumber}</p>
-                        <p style="font-size:0.7rem;">${item.studentName}</p>
+                        <i class="fas fa-file-pdf" style="font-size:2rem; color:var(--accent); margin-bottom:10px;"></i>
+                        <p style="font-size:0.85rem; font-weight:600;">${item.studentName}</p>
+                        <p style="font-size:0.75rem; color:#475569;">Adm: ${item.admissionNumber} | Class: ${item.class}</p>
+                        <a href="${BASE_URL}/${item.pdfPath.replace(/\\/g, '/')}" target="_blank" style="color:var(--accent); text-decoration:none; font-size:0.75rem; font-weight:600; margin-top:10px; display:inline-block;">View TC</a>
                     </div>
                 `).join('');
             }

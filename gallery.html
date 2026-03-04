@@ -424,8 +424,8 @@
 
                 if (data.success && data.data.length > 0) {
                     grid.innerHTML = data.data.map(item => `
-                        <div class="gallery-item" data-src="${API_URL}/${item.filePath}">
-                            <img src="${API_URL}/${item.filePath}" alt="${item.title}">
+                        <div class="gallery-item" data-src="${API_URL}/${item.filePath.replace(/\\/g, '/')}">
+                            <img src="${API_URL}/${item.filePath.replace(/\\/g, '/')}" alt="${item.title}">
                             <div class="gallery-overlay">
                                 <div class="gallery-title">${item.title}</div>
                             </div>
