@@ -418,21 +418,28 @@ ${address}
 Thank you.`;
 
         // 3. Open Gmail directly with prefilled data
-        setTimeout(() => {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            let mailUrl = '';
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        let mailUrl = '';
 
-            if (isMobile) {
-                // Better for opening mobile Gmail app
-                mailUrl = `mailto:tiskems@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyContent)}`;
-            } else {
-                // Opens Gmail directly in a web browser tab
-                mailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=tiskems@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyContent)}`;
-            }
+        if (isMobile) {
+            // Better for opening mobile Gmail app
+            mailUrl = `mailto:tiskems@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyContent)}`;
+        } else {
+            // Opens Gmail directly in a web browser tab
+            mailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=tiskems@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyContent)}`;
+        }
 
-            window.open(mailUrl, '_blank');
-            animateSuccess();
-        }, 800);
+        // Create a temporary link element to reliably open the URL
+        const link = document.createElement('a');
+        link.href = mailUrl;
+        link.target = '_blank';
+
+        // To ensure popup blockers don't stop it, dispatch a click synchronously
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        animateSuccess();
 
         function animateSuccess() {
             btn.innerHTML = '<i class="fas fa-paper-plane fa-bounce"></i> Delivering...';
