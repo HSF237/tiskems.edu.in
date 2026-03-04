@@ -67,7 +67,7 @@ export const createGalleryItem = async (req, res) => {
       });
     }
 
-    const finalPath = req.file ? req.file.path : filePath;
+    const finalPath = req.file ? `uploads/${req.file.path.split(/uploads[\\/]/).pop().replace(/\\/g, '/')}` : filePath;
 
     const galleryItem = await Gallery.create({
       title,

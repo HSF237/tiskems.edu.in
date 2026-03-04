@@ -54,8 +54,8 @@ export const generateTC = async (req, res) => {
     tc.qrCode = qrCodeDataURL;
 
     // Generate PDF
-    const pdfPath = await generateTCPDF(tc);
-    tc.pdfPath = pdfPath;
+    const absPdfPath = await generateTCPDF(tc);
+    tc.pdfPath = `uploads/${absPdfPath.split(/uploads[\\/]/).pop().replace(/\\/g, '/')}`;
 
     await tc.save();
 
@@ -319,7 +319,7 @@ export const uploadTCFile = async (req, res) => {
       parentName: 'N/A',
       dateOfLeaving: dateOfLeaving || new Date(),
       reason: reason || 'N/A',
-      pdfPath: req.file.path,
+      pdfPath: `uploads/${req.file.path.split(/uploads[\\/]/).pop().replace(/\\/g, '/')}`,
       generatedBy: req.user.id
     });
 
