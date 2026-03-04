@@ -504,7 +504,7 @@
             cursor: pointer;
         }
 
-        /* Hero Section */
+        /* Interactive Slideshow Styles */
         .hero {
             position: relative;
             height: 100vh;
@@ -515,100 +515,144 @@
             text-align: center;
             color: white;
             overflow: hidden;
+            background: #0f172a;
         }
 
-        .hero-video {
+        .slides-wrapper {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
             z-index: 1;
         }
 
-        .hero-overlay {
+        .slide-item {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.85) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.2s ease-in-out, visibility 1.2s;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide-item.active {
+            opacity: 1;
+            visibility: visible;
             z-index: 2;
         }
 
-        .hero-content {
+        /* Overlay per slide */
+        .slide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(15, 23, 42, 0.4) 50%, rgba(15, 23, 42, 0.8) 100%);
+            z-index: 1;
+        }
+
+        .slide-content {
             position: relative;
             z-index: 3;
             max-width: 900px;
             padding: 0 30px;
-            animation: fadeInUp 1s ease-out;
+            text-align: center;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Animated Elements within Slide */
+        .slide-item .hero-badge {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s;
         }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(59, 130, 246, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 10px 20px;
-            border-radius: 50px;
-            border: 1.5px solid var(--accent);
-            margin-bottom: 25px;
-            font-size: 0.9rem;
-            color: var(--accent-light);
-            font-weight: 600;
-            animation: slideDown 0.8s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero-title {
+        .slide-item .hero-title {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.25, 1, 0.5, 1) 0.7s;
             font-size: 3.5rem;
             line-height: 1.15;
             margin-bottom: 25px;
             font-weight: 800;
             letter-spacing: -1px;
-            animation: fadeInUp 1s ease-out 0.2s both;
         }
 
-        .hero-subtitle {
+        .slide-item .hero-subtitle {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.25, 1, 0.5, 1) 0.9s;
             font-size: 1.15rem;
             color: rgba(255, 255, 255, 0.85);
             margin-bottom: 45px;
             font-weight: 400;
             line-height: 1.6;
-            animation: fadeInUp 1s ease-out 0.4s both;
         }
 
-        .hero-buttons {
+        .slide-item .hero-buttons {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.2s;
             display: flex;
             gap: 20px;
             justify-content: center;
-            flex-wrap: wrap;
-            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        /* Active State Animations */
+        .slide-item.active .hero-badge,
+        .slide-item.active .hero-title,
+        .slide-item.active .hero-subtitle {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-item.active .hero-buttons {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Cursor Effect for Typewriter */
+        .hero-title::after,
+        .hero-subtitle::after {
+            content: '|';
+            margin-left: 2px;
+            animation: blink 0.7s infinite;
+            color: var(--gold);
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Ken Burns Effect on Active Slide Image */
+        .slide-item.active {
+            animation: kenBurns 15s ease-out forwards;
+        }
+
+        @keyframes kenBurns {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.15);
+            }
         }
 
         .btn {
@@ -963,27 +1007,56 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <video class="hero-video" autoplay muted loop playsinline>
-            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                type="video/mp4">
-        </video>
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <div class="hero-badge">
-                <i class="fas fa-certificate"></i> CBSE Affiliated: 931267
+        <div class="slides-wrapper" id="heroSlider">
+            <!-- Slide 1 -->
+            <div class="slide-item active" style="background-image: url('assets/images/slide1.png');">
+                <div class="slide-overlay"></div>
+                <div class="slide-content">
+                    <div class="hero-badge"><i class="fas fa-certificate"></i> CBSE Affiliated School</div>
+                    <h1 class="hero-title" data-text="Welcome to the World of Excellence"></h1>
+                    <p class="hero-subtitle"
+                        data-text="Nurturing curiosity and developing globally competent citizens since 1988. Experience high-quality education in a modern environment.">
+                    </p>
+                    <div class="hero-buttons">
+                        <button onclick="openAdmissionModal()" class="btn btn-gold"><i class="fas fa-paper-plane"></i>
+                            Enroll Now</button>
+                        <a href="about.html" class="btn btn-primary">Discover More</a>
+                    </div>
+                </div>
             </div>
-            <h1 class="hero-title">Welcome to the World of Education</h1>
-            <p class="hero-subtitle">
-                TISK English Medium School. A legacy of excellence in Kannur since 1988.
-                Empowering students with world-class education and holistic development.
-            </p>
-            <div class="hero-buttons">
-                <a href="about.html" class="btn btn-primary">
-                    <i class="fas fa-info-circle"></i> Learn More
-                </a>
-                <button onclick="openAdmissionModal()" class="btn btn-gold">
-                    <i class="fas fa-paper-plane"></i> Take Admission
-                </button>
+
+            <!-- Slide 2 -->
+            <div class="slide-item" style="background-image: url('assets/images/slide2.png');">
+                <div class="slide-overlay"></div>
+                <div class="slide-content">
+                    <div class="hero-badge"><i class="fas fa-microscope"></i> Modern Infrastructure</div>
+                    <h1 class="hero-title" data-text="Shaping Bright Futures Together"></h1>
+                    <p class="hero-subtitle"
+                        data-text="Smart classrooms, digital labs, and expert faculty dedicated to your child's holistic growth and academic brilliance.">
+                    </p>
+                    <div class="hero-buttons">
+                        <button onclick="openAdmissionModal()" class="btn btn-gold"><i
+                                class="fas fa-graduation-cap"></i>
+                            Take Admission</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="slide-item" style="background-image: url('assets/images/slide3.png');">
+                <div class="slide-overlay"></div>
+                <div class="slide-content">
+                    <div class="hero-badge"><i class="fas fa-basketball-ball"></i> Beyond Academics</div>
+                    <h1 class="hero-title" data-text="Excellence in Sports & Culture"></h1>
+                    <p class="hero-subtitle"
+                        data-text="State-of-the-art sports complex and vibrant cultural programs to help every student find their true passion.">
+                    </p>
+                    <div class="hero-buttons">
+                        <button onclick="openAdmissionModal()" class="btn btn-gold"><i class="fas fa-user-plus"></i>
+                            Join
+                            Our Community</button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1298,6 +1371,82 @@
                     });
                 }
             });
+        });
+
+        // --- PREMIMUM TYPEWRITER & SLIDER ENGINE ---
+        const slides = document.querySelectorAll('.slide-item');
+        let currentSlideIndex = 0;
+        let isTyping = false;
+
+        async function typeWriter(element, text, speed = 50) {
+            return new Promise(resolve => {
+                let i = 0;
+                element.textContent = '';
+                const timer = setInterval(() => {
+                    if (i < text.length) {
+                        element.textContent += text.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(timer);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+
+        async function deleteWriter(element, speed = 30) {
+            return new Promise(resolve => {
+                const text = element.textContent;
+                let i = text.length;
+                const timer = setInterval(() => {
+                    if (i > 0) {
+                        element.textContent = text.substring(0, i - 1);
+                        i--;
+                    } else {
+                        clearInterval(timer);
+                        resolve();
+                    }
+                }, speed);
+            });
+        }
+
+        async function runSlideCycle() {
+            const currentSlide = slides[currentSlideIndex];
+            const titleEl = currentSlide.querySelector('.hero-title');
+            const subtitleEl = currentSlide.querySelector('.hero-subtitle');
+
+            const titleText = titleEl.getAttribute('data-text');
+            const subtitleText = subtitleEl.getAttribute('data-text');
+
+            // 1. Show Slide
+            currentSlide.classList.add('active');
+
+            // 2. Type Title then Subtitle
+            await typeWriter(titleEl, titleText, 60);
+            await typeWriter(subtitleEl, subtitleText, 30);
+
+            // 3. Pause for user to read
+            await new Promise(r => setTimeout(r, 4000));
+
+            // 4. Delete Subtitle then Title
+            await deleteWriter(subtitleEl, 15);
+            await deleteWriter(titleEl, 20);
+
+            // 5. Short pause before switching
+            await new Promise(r => setTimeout(r, 500));
+
+            // 6. Hide current and move to next
+            currentSlide.classList.remove('active');
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+
+            // 7. Loop
+            runSlideCycle();
+        }
+
+        // Initialize the cycle
+        window.addEventListener('DOMContentLoaded', () => {
+            // Wait for loader to finish or start slightly after
+            setTimeout(runSlideCycle, 1500);
         });
     </script>
 
