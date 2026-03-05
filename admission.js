@@ -417,20 +417,9 @@ ${address}
 
 Thank you.`;
 
-        // 3. Open Gmail directly with prefilled data
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        let mailUrl = '';
-
-        if (isMobile) {
-            // Better for opening mobile Gmail app
-            mailUrl = `mailto:tiskems@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyContent)}`;
-        } else {
-            // Opens Gmail directly in a web browser tab
-            mailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=tiskems@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyContent)}`;
-        }
-
-        // Open the URL directly in a new tab synchronously with the form submit to bypass popup blockers
-        window.open(mailUrl, '_blank') || window.location.assign(mailUrl);
+        // 3. Open Email client with prefilled data via mailto (works on all browsers, never blocked)
+        const mailUrl = `mailto:tiskems@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyContent)}`;
+        window.location.href = mailUrl;
 
         animateSuccess();
 
