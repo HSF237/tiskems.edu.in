@@ -424,9 +424,13 @@
 
                 if (data.success && data.data.length > 0) {
                     grid.innerHTML = data.data.map(item => {
-                        const pathMatches = item.filePath ? item.filePath.match(/[\\/]?(uploads[\\/].*)/) : null;
-                        const relPath = pathMatches ? pathMatches[1] : item.filePath;
-                        const fullPath = `${API_URL}/${relPath.replace(/\\/g, '/')}`;
+                        let fullPath = item.filePath;
+                        if (fullPath && !fullPath.startsWith('http')) {
+                            // Extra-robust path cleaning for local uploads
+                            const pathMatches = fullPath.match(/[\\/]?(uploads[\\/].*)/);
+                            const relPath = pathMatches ? pathMatches[1] : fullPath;
+                            fullPath = `${API_URL}/${relPath.replace(/\\/g, '/')}`;
+                        }
 
                         return `
                         <div class="gallery-item" data-src="${fullPath}">
