@@ -275,61 +275,59 @@
 
                 <div id="admissionFormContent">
                     <div class="modal-header">
-                        <h2>Take Admission</h2>
-                        <p>Join the TISK EMS family. Fill the details below.</p>
+                        <h2>Admission Enquiry</h2>
+                        <p>Fill out the form below and we'll get back to you shortly.</p>
                     </div>
 
                     <form id="admissionForm">
                         <div class="admission-form-grid">
                             <div class="form-group">
-                                <label class="form-label"><i class="fas fa-user-graduate"></i> Student's Full Name</label>
-                                <input type="text" class="form-input" name="student_name" required placeholder="e.g. Adithya Raj">
+                                <label class="form-label" for="student_name"><i class="fas fa-user"></i> Student's Full Name</label>
+                                <input type="text" class="form-input" id="student_name" name="student_name" required placeholder="e.g. Muhammad Hasan">
                             </div>
                             <div class="form-group">
-                                <label class="form-label"><i class="fas fa-school"></i> Class Seeking</label>
-                                <select class="form-input" name="class" required>
+                                <label class="form-label" for="dob"><i class="fas fa-calendar-alt"></i> Date of Birth</label>
+                                <input type="date" class="form-input" id="dob" name="dob" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="grade"><i class="fas fa-graduation-cap"></i> Applying for Grade</label>
+                                <select class="form-input" id="grade" name="grade" required>
                                     <option value="" disabled selected>Select Grade</option>
-                                    <optgroup label="Kindergarten">
-                                        <option value="Nursery">Nursery</option>
-                                        <option value="LKG">LKG</option>
-                                        <option value="UKG">UKG</option>
-                                    </optgroup>
-                                    <optgroup label="Primary School">
-                                        <option value="Grade 1">Grade 1</option>
-                                        <option value="Grade 2">Grade 2</option>
-                                        <option value="Grade 3">Grade 3</option>
-                                        <option value="Grade 4">Grade 4</option>
-                                        <option value="Grade 5">Grade 5</option>
-                                    </optgroup>
-                                    <optgroup label="High School">
-                                        <option value="Grade 6">Grade 6</option>
-                                        <option value="Grade 7">Grade 7</option>
-                                        <option value="Grade 8">Grade 8</option>
-                                        <option value="Grade 9">Grade 9</option>
-                                        <option value="Grade 10">Grade 10</option>
-                                    </optgroup>
+                                    <option value="Nursery">Nursery</option>
+                                    <option value="LKG">LKG</option>
+                                    <option value="UKG">UKG</option>
+                                    <option value="Grade 1">Grade 1</option>
+                                    <option value="Grade 2">Grade 2</option>
+                                    <option value="Grade 3">Grade 3</option>
+                                    <option value="Grade 4">Grade 4</option>
+                                    <option value="Grade 5">Grade 5</option>
+                                    <option value="Grade 6">Grade 6</option>
+                                    <option value="Grade 7">Grade 7</option>
+                                    <option value="Grade 8">Grade 8</option>
+                                    <option value="Grade 9">Grade 9</option>
+                                    <option value="Grade 10">Grade 10</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label"><i class="fas fa-user-friends"></i> Parent/Guardian Name</label>
-                                <input type="text" class="form-input" name="parent_name" required placeholder="e.g. Suresh Kumar">
+                                <label class="form-label" for="parent_name"><i class="fas fa-user-friends"></i> Parent/Guardian's Name</label>
+                                <input type="text" class="form-input" id="parent_name" name="parent_name" required placeholder="e.g. Sadique">
                             </div>
                             <div class="form-group">
-                                <label class="form-label"><i class="fas fa-phone-alt"></i> Contact Number</label>
-                                <input type="tel" class="form-input" name="phone" required placeholder="e.g. +91 9876543210">
+                                <label class="form-label" for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                                <input type="email" class="form-input" id="email" name="email" required placeholder="e.g. hsfwebdevelopers@gmail.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="phone"><i class="fas fa-phone-alt"></i> Phone Number</label>
+                                <input type="tel" class="form-input" id="phone" name="phone" required placeholder="e.g. 9496829330">
                             </div>
                             <div class="form-group full-width">
-                                <label class="form-label"><i class="fas fa-envelope"></i> Email Address (Optional)</label>
-                                <input type="email" class="form-input" name="email" placeholder="e.g. parent@example.com">
-                            </div>
-                            <div class="form-group full-width">
-                                <label class="form-label"><i class="fas fa-map-marker-alt"></i> Residence Address</label>
-                                <textarea class="form-input" name="address" rows="3" required placeholder="Enter your full address here..."></textarea>
+                                <label class="form-label" for="message"><i class="fas fa-comment-dots"></i> Additional Message (Optional)</label>
+                                <textarea class="form-input" id="message" name="message" rows="3" placeholder="Enter any additional information or queries here..."></textarea>
                             </div>
                         </div>
 
                         <button type="submit" class="submit-btn" id="admissionSubmitBtn">
-                            <i class="fas fa-paper-plane"></i> Submit Application
+                            SUBMIT ENQUIRY <i class="fas fa-paper-plane"></i>
                         </button>
                     </form>
                 </div>
@@ -338,8 +336,8 @@
                     <div class="success-icon-wrapper">
                         <i class="fas fa-check"></i>
                     </div>
-                    <h2>Successfully Sent!</h2>
-                    <p>Your application has been sent to the Principal's Gmail. Our team will review it and get back to you shortly.</p>
+                    <h2>Application Sent!</h2>
+                    <p>Your application has been redirected to Gmail. Please click "Send" in your mail app to finalize the delivery.</p>
                     <button class="submit-btn" onclick="closeAdmissionModal()" style="background: #0f172a; margin-top: 0;">Done</button>
                 </div>
             </div>
@@ -388,32 +386,32 @@
 
         // 2. Prepare Email Subject and Body
         const studentName = form.student_name.value;
-        const className = form.class.value;
+        const className = form.grade.value;
         const parentName = form.parent_name.value;
         const phone = form.phone.value;
         const email = form.email.value || 'N/A';
-        const address = form.address.value;
+        const message = form.message.value || 'No message';
 
-        const subject = `New Admission Enquiry: ${studentName} for class ${className}`;
+        const subject = `Admission Inquiry: ${studentName} (Grade ${className})`;
 
         const bodyContent = `Hello Principal,
 
-A new admission enquiry has been submitted from the TISK EMS website.
+A new admission inquiry was received from the website.
 
 STUDENT DETAILS:
 ----------------
 Name: ${studentName}
-Class Applied For: ${className}
+Class Applied For: Grade ${className}
 
-GUARDIAN DETAILS:
------------------
+PARENT DETAILS:
+---------------
 Name: ${parentName}
 Contact Number: ${phone}
 Email Address: ${email}
 
-RESIDENCE ADDRESS:
-------------------
-${address}
+MESSAGE:
+--------
+${message}
 
 Thank you.`;
 
