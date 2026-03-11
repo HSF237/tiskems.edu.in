@@ -283,7 +283,7 @@
                         <div class="admission-form-grid">
                             <div class="form-group">
                                 <label class="form-label" for="student_name"><i class="fas fa-user"></i> Student's Full Name</label>
-                                <input type="text" class="form-input" id="student_name" name="student_name" required placeholder="e.g. Muhammad Hasan">
+                                <input type="text" class="form-input" id="student_name" name="student_name" required placeholder="e.g. John Doe">
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="dob"><i class="fas fa-calendar-alt"></i> Date of Birth</label>
@@ -310,15 +310,15 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="parent_name"><i class="fas fa-user-friends"></i> Parent/Guardian's Name</label>
-                                <input type="text" class="form-input" id="parent_name" name="parent_name" required placeholder="e.g. Sadique">
+                                <input type="text" class="form-input" id="parent_name" name="parent_name" required placeholder="e.g. Robert Smith">
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="email"><i class="fas fa-envelope"></i> Email Address</label>
-                                <input type="email" class="form-input" id="email" name="email" required placeholder="e.g. hsfwebdevelopers@gmail.com">
+                                <input type="email" class="form-input" id="email" name="email" required placeholder="e.g. parent@example.com">
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="phone"><i class="fas fa-phone-alt"></i> Phone Number</label>
-                                <input type="tel" class="form-input" id="phone" name="phone" required placeholder="e.g. 9496829330">
+                                <input type="tel" class="form-input" id="phone" name="phone" required placeholder="e.g. +91 98765 43210">
                             </div>
                             <div class="form-group full-width">
                                 <label class="form-label" for="message"><i class="fas fa-comment-dots"></i> Additional Message (Optional)</label>
