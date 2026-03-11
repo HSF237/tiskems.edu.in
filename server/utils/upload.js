@@ -61,17 +61,21 @@ export const upload = multer({
  * call this helper to upload it to Cloudinary or save it locally.
  * Returns the public URL string.
  */
-export const saveFile = (fileBuffer, mimetype, fieldname) => {
+export const saveFile = (fileBuffer, mimetype, fieldname, options = {}) => {
   return new Promise((resolve, reject) => {
     if (useCloudinary) {
       // Upload to Cloudinary via stream
       const resourceType = mimetype === 'application/pdf' ? 'raw' : 'image';
+      
+      const uploadOptions = {
+        folder: 'tisk_school',
+        resource_type: resourceType,
+        public_id: fieldname + '-' + Date.now(),
+        ...options
+      };
+
       const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: 'tisk_school',
-          resource_type: resourceType,
-          public_id: fieldname + '-' + Date.now()
-        },
+        uploadOptions,
         (error, result) => {
           if (error) return reject(error);
           resolve(result.secure_url);

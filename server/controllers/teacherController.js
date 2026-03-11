@@ -85,7 +85,11 @@ export const createTeacher = async (req, res) => {
     };
 
     if (req.file) {
-      teacherData.profileImage = await saveFile(req.file.buffer, req.file.mimetype, req.file.fieldname);
+      teacherData.profileImage = await saveFile(req.file.buffer, req.file.mimetype, req.file.fieldname, {
+        transformation: [
+          { width: 500, height: 500, crop: 'fill', gravity: 'face' }
+        ]
+      });
     }
 
     const teacher = await User.create(teacherData);
@@ -118,7 +122,11 @@ export const updateTeacher = async (req, res) => {
     if (experience) updateData.experience = parseInt(experience);
 
     if (req.file) {
-      updateData.profileImage = await saveFile(req.file.buffer, req.file.mimetype, req.file.fieldname);
+      updateData.profileImage = await saveFile(req.file.buffer, req.file.mimetype, req.file.fieldname, {
+        transformation: [
+          { width: 500, height: 500, crop: 'fill', gravity: 'face' }
+        ]
+      });
     }
 
     const teacher = await User.findByIdAndUpdate(
