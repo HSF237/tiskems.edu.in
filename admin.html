@@ -429,10 +429,10 @@
                     if (type === 'countdown') {
                         if (data.data) {
                             document.getElementById('countdown-event').value = data.data.eventName;
-                            // Format date for datetime-local input
                             const d = new Date(data.data.targetDate);
-                            const formattedDate = d.toISOString().slice(0, 16);
-                            document.getElementById('countdown-date').value = formattedDate;
+                            const offset = d.getTimezoneOffset() * 60000;
+                            const localISOTime = (new Date(d.getTime() - offset)).toISOString().slice(0, 16);
+                            document.getElementById('countdown-date').value = localISOTime;
                         }
                     } else {
                         renderLists(type, data.data);
@@ -445,11 +445,14 @@
 
         async function saveCountdown() {
             const eventName = document.getElementById('countdown-event').value;
-            const targetDate = document.getElementById('countdown-date').value;
+            const targetDateInput = document.getElementById('countdown-date').value;
 
-            if (!eventName || !targetDate) return alert('Please fill both fields');
+            if (!eventName || !targetDateInput) return alert('Please fill both fields');
 
             try {
+                // Convert local input time to ISO UTC string for the server
+                const targetDate = new Date(targetDateInput).toISOString();
+
                 const res = await fetch(`${API_URL}/countdown`, {
                     method: 'POST',
                     headers: {

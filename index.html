@@ -1058,16 +1058,13 @@
                 </div>
             </div>
         </div>
-    </section>
-    
-    <!-- Dynamic Countdown Section -->
-    <section id="countdown-section" class="countdown-container" style="display: none;">
-        <div class="container">
+        
+        <!-- Dynamic Countdown Overlay (Inside Hero) -->
+        <div id="countdown-section" class="countdown-overlay" style="display: none;">
             <div class="countdown-card">
                 <div class="countdown-info">
-                    <span class="countdown-badge">Upcoming Event</span>
+                    <span class="countdown-badge">Next Event</span>
                     <h2 id="event-name">Event Name</h2>
-                    <p>Be part of our next milestone. Counting down the moments!</p>
                 </div>
                 <div class="countdown-timer">
                     <div class="timer-unit">
@@ -1076,20 +1073,21 @@
                     </div>
                     <div class="timer-unit">
                         <span id="hours">00</span>
-                        <label>Hours</label>
+                        <label>Hrs</label>
                     </div>
                     <div class="timer-unit">
                         <span id="minutes">00</span>
-                        <label>Minutes</label>
+                        <label>Min</label>
                     </div>
                     <div class="timer-unit">
                         <span id="seconds">00</span>
-                        <label>Seconds</label>
+                        <label>Sec</label>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    
 
     <!-- Features Section -->
     <section class="features">
@@ -1484,98 +1482,87 @@
             }
         }
 
-        /* Dynamic Countdown Styles */
-        .countdown-container {
-            padding: 40px 0;
-            background: #f8fafc;
+        /* Updated Hero Countdown Overlay Styles */
+        .countdown-overlay {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 900px;
+            z-index: 100;
         }
         .countdown-card {
-            background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
-            border-radius: 24px;
-            padding: 40px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px 30px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             color: white;
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-        .countdown-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 300px;
-            height: 300px;
-            background: rgba(251, 191, 36, 0.05);
-            border-radius: 50%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         .countdown-info {
             flex: 1;
-            max-width: 500px;
         }
         .countdown-badge {
             background: var(--gold);
             color: var(--primary);
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
             font-weight: 800;
             text-transform: uppercase;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
             display: inline-block;
         }
         .countdown-info h2 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 1.4rem;
             color: white;
             font-family: 'Outfit';
-        }
-        .countdown-info p {
-            opacity: 0.8;
-            font-size: 1rem;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .countdown-timer {
             display: flex;
-            gap: 20px;
+            gap: 15px;
         }
         .timer-unit {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 16px;
-            min-width: 100px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 60px;
         }
         .timer-unit span {
             display: block;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 800;
             font-family: 'Outfit';
             line-height: 1;
-            margin-bottom: 5px;
         }
         .timer-unit label {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             opacity: 0.7;
-            letter-spacing: 1px;
         }
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
+            .countdown-overlay {
+                bottom: 15px;
+                width: 95%;
+            }
             .countdown-card {
-                flex-direction: column;
-                text-align: center;
-                gap: 30px;
-            }
-            .countdown-timer {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .timer-unit {
-                min-width: 80px;
                 padding: 15px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            .countdown-info h2 {
+                font-size: 1.1rem;
+            }
+            .timer-unit span {
+                font-size: 1.5rem;
             }
         }
     </style>
