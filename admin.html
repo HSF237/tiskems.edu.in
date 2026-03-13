@@ -376,8 +376,6 @@
         const BASE_URL = CONFIG.getBase();
         const API_URL = `${BASE_URL}/api`;
         console.log('Admin Portal API Endpoint:', API_URL);
-        let currentUser = null;
-        let token = localStorage.getItem('tisk_token');
 
         // Check if already logged in
         if (token) {
@@ -460,6 +458,9 @@
                 const res = await fetch(`${API_URL}/${type}${cacheBuster}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+                
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                
                 const data = await res.json();
                 if (data.success) {
                     if (type === 'countdown') {
@@ -478,7 +479,7 @@
                         
                         // Handle the logic even if data is null (initial state)
                         const houses = (data.data && data.data.houses) ? data.data.houses : [];
-                        const isActive = (data.data && data.data.isActive);
+                        const isActive = (data.data && (data.data.isActive === true || data.data.isActive === 'true'));
 
                         if (houses.length > 0) {
                             houses.forEach(house => addHouseRow(house));
@@ -487,13 +488,17 @@
                         }
                         
                         document.getElementById('hp-status').value = isActive ? "true" : "false";
-                        console.log('✅ House points loaded:', houses.length, 'houses');
+                        console.log('✅ House points loaded:', houses.length, 'houses, Active:', isActive);
                     } else {
                         renderLists(type, data.data);
                     }
                 }
             } catch (err) {
                 console.error(`Failed to load ${type}`, err);
+                if (type === 'house-points') {
+                    const container = document.getElementById('house-list-container');
+                    container.innerHTML = `<p style="color:#ef4444; font-size:0.85rem;"><i class="fas fa-exclamation-triangle"></i> Failed to connect to backend. Please check if the server is running.</p>`;
+                }
             }
         }
 

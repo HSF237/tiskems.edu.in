@@ -792,13 +792,11 @@
         requestAnimationFrame(raf);
 
         // Fetch House Points Championship Data
+        let hpRetryCount = 0;
         async function initHousePoints() {
             function getApiBase() {
                 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname;
-                if (isLocal) {
-                    // Start with the port the user is currently on, defaults to 5001
-                    return `http://localhost:${window.location.port === '5001' ? '5001' : '5000'}`;
-                }
+                if (isLocal) return `http://localhost:${window.location.port === '5001' ? '5001' : '5000'}`;
                 return 'https://tisk-backend.onrender.com';
             }
             
@@ -809,27 +807,23 @@
             if (!section || !grid) return;
 
             try {
-                let res;
                 const cacheBuster = `?t=${Date.now()}`;
-                
+                let res;
                 try {
                     res = await fetch(`${API_BASE_URL}/api/house-points${cacheBuster}`);
                 } catch (e) {
                     if (API_BASE_URL.includes('localhost')) {
-                        // Try secondary local port if first one fails
                         const altPort = API_BASE_URL.includes('5001') ? '5000' : '5001';
                         res = await fetch(`http://localhost:${altPort}/api/house-points${cacheBuster}`);
                     } else throw e;
                 }
                 
                 const result = await res.json();
-                console.log('House Points Data:', result);
-
                 const isActive = result.data && (result.data.isActive === true || result.data.isActive === 'true');
                 
                 if (result.success && isActive && result.data.houses && result.data.houses.length > 0) {
                     grid.innerHTML = '';
-                    section.style.display = 'block'; // Show section early to prevent jumpiness
+                    section.style.display = 'block';
                     
                     result.data.houses.forEach((house, index) => {
                         const card = document.createElement('div');
@@ -841,24 +835,25 @@
                             <div style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">Championship Points</div>
                         `;
                         grid.appendChild(card);
-                        
-                        // Staggered entry animation
                         setTimeout(() => card.classList.add('visible'), (index * 150) + 100);
                     });
                 } else {
-                    console.log('House system is inactive or empty.');
                     section.style.display = 'none';
                 }
             } catch (err) {
-                console.error('House Points Error:', err);
-                section.style.display = 'none';
+                console.log('API not ready yet, retrying... (Render backend may be waking up)');
+                if (hpRetryCount < 6) {
+                    hpRetryCount++;
+                    setTimeout(initHousePoints, 5000); // Retry every 5 seconds for up to 30 seconds
+                } else {
+                    section.style.display = 'none';
+                }
             }
         }
         
-        // Execute multiple times to ensure it loads even if network is slow
+        // Start init
         initHousePoints();
         window.addEventListener('load', initHousePoints);
-        setTimeout(initHousePoints, 2000);
     </script>
     <script src="admission.js"></script>
 
