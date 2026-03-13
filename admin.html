@@ -359,16 +359,21 @@
     </div>
 
     <script>
-        // CENTRALIZED API CONFIG
-        function getApiBase() {
-            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname;
-            if (isLocal) {
-                return 'http://localhost:5001';
+        // API CONFIGURATION
+        const CONFIG = {
+            getLocalBase: () => {
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname;
+                return isLocal ? (window.location.port === '5001' ? 'http://localhost:5001' : 'http://localhost:5000') : 'https://tisk-backend.onrender.com';
+            },
+            getBase: () => {
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname) {
+                    return CONFIG.getLocalBase();
+                }
+                return 'https://tisk-backend.onrender.com';
             }
-            return 'https://tisk-backend.onrender.com';
-        }
+        };
 
-        const BASE_URL = getApiBase();
+        const BASE_URL = CONFIG.getBase();
         const API_URL = `${BASE_URL}/api`;
         console.log('Admin Portal API Endpoint:', API_URL);
         let currentUser = null;
@@ -451,33 +456,38 @@
 
         async function loadData(type) {
             try {
-                const res = await fetch(`${API_URL}/${type}`, {
+                const cacheBuster = `?t=${Date.now()}`;
+                const res = await fetch(`${API_URL}/${type}${cacheBuster}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
                 if (data.success) {
                     if (type === 'countdown') {
                         if (data.data) {
-                            document.getElementById('countdown-event').value = data.data.eventName;
-                            const d = new Date(data.data.targetDate);
-                            const offset = d.getTimezoneOffset() * 60000;
-                            const localISOTime = (new Date(d.getTime() - offset)).toISOString().slice(0, 16);
-                            document.getElementById('countdown-date').value = localISOTime;
+                            document.getElementById('countdown-event').value = data.data.eventName || '';
+                            if (data.data.targetDate) {
+                                const d = new Date(data.data.targetDate);
+                                const offset = d.getTimezoneOffset() * 60000;
+                                const localISOTime = (new Date(d.getTime() - offset)).toISOString().slice(0, 16);
+                                document.getElementById('countdown-date').value = localISOTime;
+                            }
                         }
                     } else if (type === 'house-points') {
-                        console.log('📦 Received House Points Data:', data.data);
                         const container = document.getElementById('house-list-container');
                         container.innerHTML = '';
                         
-                        if (data.data && data.data.houses && data.data.houses.length > 0) {
-                            data.data.houses.forEach(house => addHouseRow(house));
-                            document.getElementById('hp-status').value = data.data.isActive ? "true" : "false";
-                            console.log('✅ Loaded', data.data.houses.length, 'houses');
+                        // Handle the logic even if data is null (initial state)
+                        const houses = (data.data && data.data.houses) ? data.data.houses : [];
+                        const isActive = (data.data && data.data.isActive);
+
+                        if (houses.length > 0) {
+                            houses.forEach(house => addHouseRow(house));
                         } else {
-                            console.log('ℹ️ No houses found in DB, creating empty row.');
-                            addHouseRow();
-                            document.getElementById('hp-status').value = "false";
+                            addHouseRow(); // Add empty row if none exist
                         }
+                        
+                        document.getElementById('hp-status').value = isActive ? "true" : "false";
+                        console.log('✅ House points loaded:', houses.length, 'houses');
                     } else {
                         renderLists(type, data.data);
                     }
@@ -515,12 +525,18 @@
         }
 
         async function saveHousePoints() {
+            const btn = document.querySelector('button[onclick="saveHousePoints()"]');
+            const originalText = btn.innerText;
+            btn.innerText = 'Updating...';
+            btn.disabled = true;
+
             const rows = document.querySelectorAll('.house-row');
             const houses = Array.from(rows).map(row => ({
-                name: row.querySelector('.house-name').value,
+                name: row.querySelector('.house-name').value.trim(),
                 color: row.querySelector('.house-color').value,
                 points: parseInt(row.querySelector('.house-pts').value) || 0
-            }));
+            })).filter(h => h.name !== ''); // Don't save empty named houses
+
             const isActive = document.getElementById('hp-status').value === "true";
 
             try {
@@ -536,14 +552,16 @@
                 if (data.success) {
                     alert('House Championship updated successfully!');
                     console.log('✅ Save successful:', data.data);
-                    // Reload to confirm data is in DB
                     loadData('house-points');
                 } else {
                     alert('Save failed: ' + (data.message || 'Unknown error'));
                 }
             } catch (err) {
                 console.error('Update failed', err);
-                alert('Update failed. Check if local server is running.');
+                alert('Connection error. Is the server running?');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         }
 
