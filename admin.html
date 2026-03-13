@@ -359,11 +359,10 @@
     </div>
 
     <script>
-        // ROBUST API DETECTION
+        // CENTRALIZED API CONFIG
         function getApiBase() {
             const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname;
             if (isLocal) {
-                // Return 5001 as it is your primary backend port
                 return 'http://localhost:5001';
             }
             return 'https://tisk-backend.onrender.com';
@@ -371,6 +370,7 @@
 
         const BASE_URL = getApiBase();
         const API_URL = `${BASE_URL}/api`;
+        console.log('Admin Portal API Endpoint:', API_URL);
         let currentUser = null;
         let token = localStorage.getItem('tisk_token');
 
@@ -535,9 +535,15 @@
                 const data = await res.json();
                 if (data.success) {
                     alert('House Championship updated successfully!');
+                    console.log('✅ Save successful:', data.data);
+                    // Reload to confirm data is in DB
+                    loadData('house-points');
+                } else {
+                    alert('Save failed: ' + (data.message || 'Unknown error'));
                 }
             } catch (err) {
-                alert('Update failed');
+                console.error('Update failed', err);
+                alert('Update failed. Check if local server is running.');
             }
         }
 

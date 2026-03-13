@@ -26,18 +26,19 @@ router.post('/', protect, authorize('admin'), async (req, res) => {
   try {
     const { houses, isActive } = req.body;
 
-    let points = await HousePoint.findOne();
+    // We update the most recent record or create a new one
+    let points = await HousePoint.findOne().sort({ createdAt: -1 });
 
     if (points) {
-      points.houses = houses;
+      points.houses = houses || [];
       points.isActive = (isActive === true || isActive === 'true');
       points.updatedBy = req.user.id;
       points.lastUpdated = Date.now();
-      points.markModified('houses'); // Force Mongoose to recognize the array change
+      points.markModified('houses'); 
       await points.save();
     } else {
       points = await HousePoint.create({
-        houses,
+        houses: houses || [],
         isActive: (isActive === true || isActive === 'true'),
         updatedBy: req.user.id
       });

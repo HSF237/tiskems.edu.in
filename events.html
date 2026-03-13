@@ -797,58 +797,63 @@
                 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname;
                 return isLocal ? 'http://localhost:5001' : 'https://tisk-backend.onrender.com';
             }
+            
             const API_BASE_URL = getApiBase();
+            const section = document.getElementById('house-points-section');
+            const grid = document.getElementById('leaderboard-grid');
+
+            if (!section || !grid) return;
 
             try {
                 let res;
                 try {
                     res = await fetch(`${API_BASE_URL}/api/house-points`);
                 } catch (e) {
-                    // Fallback to 5000 if 5001 fails on local
+                    // Local fallback to port 5000 if 5001 fails
                     if (API_BASE_URL.includes('localhost')) {
                         res = await fetch('http://localhost:5000/api/house-points');
                     } else throw e;
                 }
                 
                 const result = await res.json();
+                console.log('House Points Response:', result);
 
-                if (result.success && result.data && result.data.isActive) {
-                    const data = result.data;
-                    const grid = document.getElementById('leaderboard-grid');
-                    if (!grid) return;
-                    
+                // Check for activity (handle both boolean and string "true" from DB)
+                const isActive = result.data && (result.data.isActive == true || result.data.isActive == 'true');
+                
+                if (result.success && isActive && result.data.houses && result.data.houses.length > 0) {
                     grid.innerHTML = '';
-
-                    if (data.houses && data.houses.length > 0) {
-                        data.houses.forEach(house => {
-                            const card = document.createElement('div');
-                            card.className = 'house-card fade-in visible'; // Force visible since we are injecting
-                            card.style = `background: white; border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border-bottom: 6px solid ${house.color}; transition: 0.3s; cursor: default; margin-bottom: 20px;`;
-                            card.innerHTML = `
-                                <div style="font-size: 0.9rem; font-weight: 800; color: ${house.color}; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">${house.name}</div>
-                                <div style="font-size: 3.2rem; font-weight: 800; color: var(--primary); font-family: 'Outfit';">${house.points}</div>
-                                <div style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">Championship Points</div>
-                            `;
-                            grid.appendChild(card);
-                        });
-                        document.getElementById('house-points-section').style.display = 'block';
-                    }
+                    
+                    result.data.houses.forEach((house, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'house-card'; // Animation triggered by CSS .visible
+                        card.style = `background: white; border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border-bottom: 6px solid ${house.color}; transition: all 0.5s ease; cursor: default; margin-bottom: 20px;`;
+                        card.innerHTML = `
+                            <div style="font-size: 0.9rem; font-weight: 800; color: ${house.color}; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">${house.name}</div>
+                            <div style="font-size: 3.2rem; font-weight: 800; color: var(--primary); font-family: 'Outfit';">${house.points}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">Championship Points</div>
+                        `;
+                        grid.appendChild(card);
+                        
+                        // Staggered entry animation
+                        setTimeout(() => card.classList.add('visible'), (index * 150) + 300);
+                    });
+                    
+                    section.style.display = 'block';
+                } else {
+                    console.log('Leaderboard is hidden. isActive?', isActive, 'Count:', result.data?.houses?.length);
+                    section.style.display = 'none';
                 }
             } catch (err) {
                 console.error('Failed to load house points:', err);
+                section.style.display = 'none';
             }
         }
         
-        // Wait for page load
-        window.addEventListener('scroll', function initOnce() {
-            initHousePoints();
-            window.removeEventListener('scroll', initOnce);
-        }, { once: true });
-        
-        // Also try immediately
-        setTimeout(initHousePoints, 1000);
-
+        // Final execution strategy: Immediate + DOMReady + 2.5s Backup
         initHousePoints();
+        window.addEventListener('DOMContentLoaded', initHousePoints);
+        setTimeout(initHousePoints, 2500);
     </script>
     <script src="admission.js"></script>
 
