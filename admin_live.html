@@ -377,9 +377,6 @@
         const API_URL = `${BASE_URL}/api`;
         console.log('Admin Portal API Endpoint:', API_URL);
 
-        let currentUser = null;
-        let token = localStorage.getItem('tisk_token');
-
         // Check if already logged in
         if (token) {
             checkAuth();
@@ -491,7 +488,7 @@
                         }
                         
                         document.getElementById('hp-status').value = isActive ? "true" : "false";
-                        console.log('✅ House points loaded:', houses.length, 'houses, Active:', isActive);
+                        console.log('? House points loaded:', houses.length, 'houses, Active:', isActive);
                     } else {
                         renderLists(type, data.data);
                     }
@@ -559,7 +556,7 @@
                 const data = await res.json();
                 if (data.success) {
                     alert('House Championship updated successfully!');
-                    console.log('✅ Save successful:', data.data);
+                    console.log('? Save successful:', data.data);
                     loadData('house-points');
                 } else {
                     alert('Save failed: ' + (data.message || 'Unknown error'));
@@ -693,7 +690,7 @@
                     const srcUrl = item.filePath.startsWith('http') ? item.filePath : `${BASE_URL}/${item.filePath.replace(/\\/g, '/')}`;
                     return `
                     <div class="mock-item">
-                        <button class="delete-btn" onclick="removeItem('gallery', '${item._id}')">×</button>
+                        <button class="delete-btn" onclick="removeItem('gallery', '${item._id}')">�</button>
                         <img src="${srcUrl}">
                         <p style="font-size:0.75rem; font-weight:600; margin-top:5px;">${item.title || 'Untitled'}</p>
                     </div>
@@ -712,7 +709,7 @@
 
                     return `
                     <div class="mock-item">
-                        <button class="delete-btn" onclick="removeItem('tc', '${item._id}')">×</button>
+                        <button class="delete-btn" onclick="removeItem('tc', '${item._id}')">�</button>
                         <i class="fas fa-file-pdf" style="font-size:2rem; color: #dc2626; margin-bottom:10px;"></i>
                         <p style="font-size:0.85rem; font-weight:700; color: #1e293b;">${item.studentName}</p>
                         <p style="font-size:0.75rem; color:#64748b;">Adm: ${item.admissionNumber} | ID: ${item.tcNumber || 'N/A'}</p>
