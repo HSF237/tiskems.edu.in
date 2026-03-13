@@ -606,7 +606,9 @@
                 url = `${API_URL}/${relativePath.replace(/\\/g, '/')}`;
             }
 
-            viewer.src = url;
+            // Using Google Docs Viewer as a reliable cross-browser way to view PDFs inline
+            // This bypasses issues where the browser might try to download the file instead of viewing it.
+            viewer.src = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
 
             container.style.display = 'block';
             container.scrollIntoView({ behavior: 'smooth' });

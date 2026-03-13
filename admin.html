@@ -580,13 +580,15 @@
                         cleanUrl = `${BASE_URL}/${rel.replace(/\\/g, '/')}`;
                     }
 
+                    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(cleanUrl)}`;
+
                     return `
                     <div class="mock-item">
                         <button class="delete-btn" onclick="removeItem('tc', '${item._id}')">×</button>
                         <i class="fas fa-file-pdf" style="font-size:2rem; color: #dc2626; margin-bottom:10px;"></i>
                         <p style="font-size:0.85rem; font-weight:700; color: #1e293b;">${item.studentName}</p>
                         <p style="font-size:0.75rem; color:#64748b;">Adm: ${item.admissionNumber} | ID: ${item.tcNumber || 'N/A'}</p>
-                        <a href="${cleanUrl}" target="_blank" style="color:#d97706; text-decoration:none; font-size:0.75rem; font-weight:600; margin-top:10px; display:inline-block;">View Document</a>
+                        <a href="${viewerUrl}" target="_blank" style="color:#d97706; text-decoration:none; font-size:0.75rem; font-weight:600; margin-top:10px; display:inline-block;">View Document</a>
                     </div>
                 `}).join('');
             }
