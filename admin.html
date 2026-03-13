@@ -335,24 +335,13 @@
 
             <!-- House Points Panel -->
             <div id="housePoints-panel" class="upload-section">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
-                    <div class="input-group">
-                        <label style="color: #059669;">Emerald Green Points</label>
-                        <input type="number" id="hp-emerald" value="0">
-                    </div>
-                    <div class="input-group">
-                        <label style="color: #dc2626;">Ruby Red Points</label>
-                        <input type="number" id="hp-ruby" value="0">
-                    </div>
-                    <div class="input-group">
-                        <label style="color: #2563eb;">Sapphire Blue Points</label>
-                        <input type="number" id="hp-sapphire" value="0">
-                    </div>
-                    <div class="input-group">
-                        <label style="color: #d97706;">Topaz Yellow Points</label>
-                        <input type="number" id="hp-topaz" value="0">
-                    </div>
+                <div id="house-list-container" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
+                    <!-- Dynamic house inputs will be injected here -->
                 </div>
+
+                <button class="btn" onclick="addHouseRow()" style="background: #f1f5f9; color: var(--primary); width: auto; margin-bottom: 30px;">
+                    <i class="fas fa-plus"></i> Add New House
+                </button>
 
                 <div class="input-group">
                     <label>Leaderboard Visibility (Shows on Events Page)</label>
@@ -468,11 +457,10 @@
                             document.getElementById('countdown-date').value = localISOTime;
                         }
                     } else if (type === 'housePoints') {
-                        if (data.data) {
-                            document.getElementById('hp-emerald').value = data.data.emerald || 0;
-                            document.getElementById('hp-ruby').value = data.data.ruby || 0;
-                            document.getElementById('hp-sapphire').value = data.data.sapphire || 0;
-                            document.getElementById('hp-topaz').value = data.data.topaz || 0;
+                        const container = document.getElementById('house-list-container');
+                        container.innerHTML = '';
+                        if (data.data && data.data.houses) {
+                            data.data.houses.forEach(house => addHouseRow(house));
                             document.getElementById('hp-status').value = data.data.isActive ? "true" : "false";
                         }
                     } else {
@@ -512,10 +500,12 @@
         }
 
         async function saveHousePoints() {
-            const emerald = parseInt(document.getElementById('hp-emerald').value) || 0;
-            const ruby = parseInt(document.getElementById('hp-ruby').value) || 0;
-            const sapphire = parseInt(document.getElementById('hp-sapphire').value) || 0;
-            const topaz = parseInt(document.getElementById('hp-topaz').value) || 0;
+            const rows = document.querySelectorAll('.house-row');
+            const houses = Array.from(rows).map(row => ({
+                name: row.querySelector('.house-name').value,
+                color: row.querySelector('.house-color').value,
+                points: parseInt(row.querySelector('.house-pts').value) || 0
+            }));
             const isActive = document.getElementById('hp-status').value === "true";
 
             try {
@@ -525,15 +515,40 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ emerald, ruby, sapphire, topaz, isActive })
+                    body: JSON.stringify({ houses, isActive })
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert('House Championship scores updated successfully!');
+                    alert('House Championship updated successfully!');
                 }
             } catch (err) {
                 alert('Update failed');
             }
+        }
+
+        function addHouseRow(data = { name: '', color: '#3b82f6', points: 0 }) {
+            const container = document.getElementById('house-list-container');
+            const row = document.createElement('div');
+            row.className = 'house-row';
+            row.style = 'display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;';
+            row.innerHTML = `
+                <div class="input-group" style="margin-bottom:0">
+                    <label style="font-size:0.75rem">House Name</label>
+                    <input type="text" class="house-name" value="${data.name}" placeholder="e.g. Red House">
+                </div>
+                <div class="input-group" style="margin-bottom:0">
+                    <label style="font-size:0.75rem">Color</label>
+                    <input type="color" class="house-color" value="${data.color}" style="height:42px; padding:2px">
+                </div>
+                <div class="input-group" style="margin-bottom:0">
+                    <label style="font-size:0.75rem">Points</label>
+                    <input type="number" class="house-pts" value="${data.points}">
+                </div>
+                <button onclick="this.parentElement.remove()" style="background:#fee2e2; color:#ef4444; border:none; width:42px; height:42px; border-radius:10px; cursor:pointer">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            container.appendChild(row);
         }
 
         function logout() {
