@@ -308,6 +308,42 @@
         <p>Events & Activities</p>
     </section>
 
+    <!-- House Championship Section (Only visible when active) -->
+    <div id="house-points-section" class="container" style="display: none; padding-top: 60px; padding-bottom: 20px;">
+        <div class="section-head" style="margin-bottom: 40px;">
+            <h2 style="font-size: 2.2rem;"><i class="fas fa-trophy" style="color: var(--gold); margin-right: 15px;"></i>House Championship 2025–26</h2>
+            <div class="divider"></div>
+        </div>
+        
+        <div class="leaderboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px;">
+            <!-- Emerald -->
+            <div class="house-card emerald fade-in" style="background: white; border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border-bottom: 6px solid #10b981; transition: 0.3s; cursor: default;">
+                <div style="font-size: 0.9rem; font-weight: 800; color: #059669; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Emerald Green</div>
+                <div id="pts-emerald" style="font-size: 3.2rem; font-weight: 800; color: var(--primary); font-family: 'Outfit';">0</div>
+                <div style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">Championship Points</div>
+            </div>
+            <!-- Ruby -->
+            <div class="house-card ruby fade-in" style="background: white; border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border-bottom: 6px solid #ef4444; transition: 0.3s; cursor: default;">
+                <div style="font-size: 0.9rem; font-weight: 800; color: #dc2626; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Ruby Red</div>
+                <div id="pts-ruby" style="font-size: 3.2rem; font-weight: 800; color: var(--primary); font-family: 'Outfit';">0</div>
+                <div style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">Championship Points</div>
+            </div>
+            <!-- Sapphire -->
+            <div class="house-card sapphire fade-in" style="background: white; border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border-bottom: 6px solid #3b82f6; transition: 0.3s; cursor: default;">
+                <div style="font-size: 0.9rem; font-weight: 800; color: #2563eb; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Sapphire Blue</div>
+                <div id="pts-sapphire" style="font-size: 3.2rem; font-weight: 800; color: var(--primary); font-family: 'Outfit';">0</div>
+                <div style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">Championship Points</div>
+            </div>
+            <!-- Topaz -->
+            <div class="house-card topaz fade-in" style="background: white; border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border-bottom: 6px solid #f59e0b; transition: 0.3s; cursor: default;">
+                <div style="font-size: 0.9rem; font-weight: 800; color: #d97706; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Topaz Yellow</div>
+                <div id="pts-topaz" style="font-size: 3.2rem; font-weight: 800; color: var(--primary); font-family: 'Outfit';">0</div>
+                <div style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">Championship Points</div>
+            </div>
+        </div>
+        <div class="divider" style="margin-top: 60px; opacity: 0.2; width: 100%;"></div>
+    </div>
+
     <div class="container">
         <div class="section-head">
             <h2>Programmes Conducting Yearly</h2>
@@ -754,6 +790,32 @@
         }
 
         requestAnimationFrame(raf);
+
+        // Fetch House Points Championship Data
+        async function initHousePoints() {
+            const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:5001'
+                : 'https://tisk-backend.onrender.com';
+
+            try {
+                const res = await fetch(`${API_URL}/api/house-points`);
+                const result = await res.json();
+
+                if (result.success && result.data && result.data.isActive) {
+                    const data = result.data;
+                    document.getElementById('pts-emerald').innerText = data.emerald || 0;
+                    document.getElementById('pts-ruby').innerText = data.ruby || 0;
+                    document.getElementById('pts-sapphire').innerText = data.sapphire || 0;
+                    document.getElementById('pts-topaz').innerText = data.topaz || 0;
+                    
+                    document.getElementById('house-points-section').style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Failed to load house points:', err);
+            }
+        }
+
+        initHousePoints();
     </script>
     <script src="admission.js"></script>
 

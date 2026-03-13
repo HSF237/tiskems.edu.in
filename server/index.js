@@ -16,6 +16,7 @@ import noticeRoutes from './routes/notices.js';
 import galleryRoutes from './routes/gallery.js';
 import certificateRoutes from './routes/certificates.js';
 import countdownRoutes from './routes/countdown.js';
+import housePointRoutes from './routes/housePoints.js';
 
 // Load environment variables (Moved to absolute top via import)
 
@@ -49,6 +50,7 @@ app.use('/api/notices', noticeRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/countdown', countdownRoutes);
+app.use('/api/house-points', housePointRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {

@@ -273,6 +273,7 @@
             <div class="nav-item" data-panel="tc" onclick="showPanel('tc')"><i class="fas fa-file-pdf"></i> TC
                 Management</div>
             <div class="nav-item" data-panel="countdown" onclick="showPanel('countdown')"><i class="fas fa-clock"></i> Countdown</div>
+            <div class="nav-item" data-panel="housePoints" onclick="showPanel('housePoints')"><i class="fas fa-trophy"></i> House Points</div>
             <div class="nav-item btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
         </div>
 
@@ -329,7 +330,39 @@
                     <label>Event Date & Time</label>
                     <input type="datetime-local" id="countdown-date">
                 </div>
-                <button class="login-btn" onclick="saveCountdown()" style="max-width: 200px;">Update Countdown</button>
+                <button class="login-btn" onclick="saveCountdown()" style="margin-top: 20px;">Update Live Countdown</button>
+            </div>
+
+            <!-- House Points Panel -->
+            <div id="housePoints-panel" class="upload-section">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                    <div class="input-group">
+                        <label style="color: #059669;">Emerald Green Points</label>
+                        <input type="number" id="hp-emerald" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label style="color: #dc2626;">Ruby Red Points</label>
+                        <input type="number" id="hp-ruby" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label style="color: #2563eb;">Sapphire Blue Points</label>
+                        <input type="number" id="hp-sapphire" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label style="color: #d97706;">Topaz Yellow Points</label>
+                        <input type="number" id="hp-topaz" value="0">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Leaderboard Visibility (Shows on Events Page)</label>
+                    <select id="hp-status" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Inter';">
+                        <option value="false">Deactivated (Hidden)</option>
+                        <option value="true">Activated (Visible)</option>
+                    </select>
+                </div>
+
+                <button class="login-btn" onclick="saveHousePoints()" style="margin-top: 20px; background: #0f172a;">Update Championship Leaderboard</button>
             </div>
 
             <!-- Disclosure upload removed -->
@@ -434,6 +467,14 @@
                             const localISOTime = (new Date(d.getTime() - offset)).toISOString().slice(0, 16);
                             document.getElementById('countdown-date').value = localISOTime;
                         }
+                    } else if (type === 'housePoints') {
+                        if (data.data) {
+                            document.getElementById('hp-emerald').value = data.data.emerald || 0;
+                            document.getElementById('hp-ruby').value = data.data.ruby || 0;
+                            document.getElementById('hp-sapphire').value = data.data.sapphire || 0;
+                            document.getElementById('hp-topaz').value = data.data.topaz || 0;
+                            document.getElementById('hp-status').value = data.data.isActive ? "true" : "false";
+                        }
                     } else {
                         renderLists(type, data.data);
                     }
@@ -464,6 +505,31 @@
                 const data = await res.json();
                 if (data.success) {
                     alert('Countdown updated successfully!');
+                }
+            } catch (err) {
+                alert('Update failed');
+            }
+        }
+
+        async function saveHousePoints() {
+            const emerald = parseInt(document.getElementById('hp-emerald').value) || 0;
+            const ruby = parseInt(document.getElementById('hp-ruby').value) || 0;
+            const sapphire = parseInt(document.getElementById('hp-sapphire').value) || 0;
+            const topaz = parseInt(document.getElementById('hp-topaz').value) || 0;
+            const isActive = document.getElementById('hp-status').value === "true";
+
+            try {
+                const res = await fetch(`${API_URL}/house-points`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ emerald, ruby, sapphire, topaz, isActive })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('House Championship scores updated successfully!');
                 }
             } catch (err) {
                 alert('Update failed');
