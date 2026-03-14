@@ -277,29 +277,6 @@
                 grid-template-columns: 1fr;
             }
         }
-
-        /* House Points Styling */
-        .house-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: default;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        .house-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .house-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.1);
-        }
     </style>
 </head>
 
@@ -330,19 +307,6 @@
         <h1>Events</h1>
         <p>Events & Activities</p>
     </section>
-
-    <!-- House Championship Section (Only visible when active) -->
-    <div id="house-points-section" class="container" style="display: none; padding-top: 60px; padding-bottom: 20px;">
-        <div class="section-head" style="margin-bottom: 40px;">
-            <h2 style="font-size: 2.2rem;"><i class="fas fa-trophy" style="color: var(--gold); margin-right: 15px;"></i>House Championship 2025–26</h2>
-            <div class="divider"></div>
-        </div>
-        
-        <div id="leaderboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px;">
-            <!-- Dynamic House Cards will be injected here -->
-        </div>
-        <div class="divider" style="margin-top: 60px; opacity: 0.2; width: 100%;"></div>
-    </div>
 
     <div class="container">
         <div class="section-head">
@@ -790,70 +754,6 @@
         }
 
         requestAnimationFrame(raf);
-
-        // Fetch House Points Championship Data
-        let hpRetryCount = 0;
-        async function initHousePoints() {
-            function getApiBase() {
-                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || !window.location.hostname;
-                if (isLocal) return `http://localhost:${window.location.port === '5001' ? '5001' : '5000'}`;
-                return 'https://tisk-backend.onrender.com';
-            }
-            
-            const API_BASE_URL = getApiBase();
-            const section = document.getElementById('house-points-section');
-            const grid = document.getElementById('leaderboard-grid');
-
-            if (!section || !grid) return;
-
-            try {
-                const cacheBuster = `?t=${Date.now()}`;
-                let res;
-                try {
-                    res = await fetch(`${API_BASE_URL}/api/house-points${cacheBuster}`);
-                } catch (e) {
-                    if (API_BASE_URL.includes('localhost')) {
-                        const altPort = API_BASE_URL.includes('5001') ? '5000' : '5001';
-                        res = await fetch(`http://localhost:${altPort}/api/house-points${cacheBuster}`);
-                    } else throw e;
-                }
-                
-                const result = await res.json();
-                const isActive = result.data && (result.data.isActive === true || result.data.isActive === 'true');
-                
-                if (result.success && isActive && result.data.houses && result.data.houses.length > 0) {
-                    grid.innerHTML = '';
-                    section.style.display = 'block';
-                    
-                    result.data.houses.forEach((house, index) => {
-                        const card = document.createElement('div');
-                        card.className = 'house-card'; 
-                        card.style = `background: white; border-radius: 20px; padding: 30px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border-bottom: 6px solid ${house.color}; transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); cursor: default; margin-bottom: 20px;`;
-                        card.innerHTML = `
-                            <div style="font-size: 0.9rem; font-weight: 800; color: ${house.color}; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">${house.name}</div>
-                            <div style="font-size: 3.2rem; font-weight: 800; color: var(--primary); font-family: 'Outfit';">${house.points}</div>
-                            <div style="font-size: 0.85rem; color: var(--text-light); font-weight: 500;">Championship Points</div>
-                        `;
-                        grid.appendChild(card);
-                        setTimeout(() => card.classList.add('visible'), (index * 150) + 100);
-                    });
-                } else {
-                    section.style.display = 'none';
-                }
-            } catch (err) {
-                console.log('API not ready yet, retrying... (Render backend may be waking up)');
-                if (hpRetryCount < 6) {
-                    hpRetryCount++;
-                    setTimeout(initHousePoints, 5000); // Retry every 5 seconds for up to 30 seconds
-                } else {
-                    section.style.display = 'none';
-                }
-            }
-        }
-        
-        // Start init
-        initHousePoints();
-        window.addEventListener('load', initHousePoints);
     </script>
     <script src="admission.js"></script>
 
