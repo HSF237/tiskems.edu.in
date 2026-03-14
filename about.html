@@ -521,27 +521,59 @@
         @media (max-width: 768px) {
             .about-grid {
                 grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .about-img {
+                border-width: 4px;
+                border-radius: 16px;
+                margin-bottom: 20px;
+            }
+
+            .about-img img {
+                height: 220px; /* Horizontal view for mobile */
             }
 
             .timeline::before {
-                left: 30px;
+                left: 50%;
             }
 
             .timeline-item {
-                flex-direction: row !important;
+                flex-direction: inherit; /* Restore alternating from nth-child */
+                margin-bottom: 40px;
             }
 
             .timeline-content {
-                width: calc(100% - 80px);
-                margin-left: 80px;
+                width: 42%; /* Slightly smaller for better gap */
+                padding: 12px;
+                border-radius: 12px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.08); /* Slimmer shadow */
+            }
+
+            .timeline-year {
+                font-size: 1.2rem;
+            }
+
+            .timeline-event {
+                font-size: 0.85rem;
             }
 
             .timeline-dot {
-                left: 30px;
+                left: 50%;
+                width: 14px;
+                height: 14px;
             }
 
+            .page-hero {
+                padding: 60px 5% 40px;
+                margin-top: 55px;
+            }
             .page-hero h1 {
-                font-size: 2.5rem;
+                font-size: 1.4rem;
+                margin-bottom: 8px;
+            }
+            .page-hero p {
+                font-size: 0.85rem;
             }
         }
     </style>

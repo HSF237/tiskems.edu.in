@@ -1005,11 +1005,46 @@
             }
 
             .grid-3 {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .card {
+                padding: 20px 15px;
+                text-align: center;
+                border-radius: 12px;
+            }
+
+            .card-icon {
+                font-size: 1.8rem;
+                margin-bottom: 12px;
+            }
+
+            .card h3 {
+                font-size: 0.95rem;
+                margin-bottom: 8px;
+            }
+
+            .card p {
+                font-size: 0.75rem;
+                line-height: 1.4;
             }
 
             .section-head h2 {
                 font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 2.2rem;
+            }
+
+            .stat-label {
+                font-size: 0.8rem;
             }
         }
     </style>
