@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
 // @access  Private/Admin
 router.post('/', protect, authorize('admin'), async (req, res) => {
   try {
-    const { houses, isActive } = req.body;
+    const { houses, isActive, isEnded } = req.body;
 
     // We update the most recent record or create a new one
     let points = await HousePoint.findOne().sort({ createdAt: -1 });
@@ -32,6 +32,7 @@ router.post('/', protect, authorize('admin'), async (req, res) => {
     if (points) {
       points.houses = houses || [];
       points.isActive = (isActive === true || isActive === 'true');
+      points.isEnded = (isEnded === true || isEnded === 'true');
       points.updatedBy = req.user.id;
       points.lastUpdated = Date.now();
       points.markModified('houses'); 
@@ -40,6 +41,7 @@ router.post('/', protect, authorize('admin'), async (req, res) => {
       points = await HousePoint.create({
         houses: houses || [],
         isActive: (isActive === true || isActive === 'true'),
+        isEnded: (isEnded === true || isEnded === 'true'),
         updatedBy: req.user.id
       });
     }

@@ -12,6 +12,10 @@ const HousePointSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  isEnded: {
+    type: Boolean,
+    default: false
+  },
   lastUpdated: {
     type: Date,
     default: Date.now

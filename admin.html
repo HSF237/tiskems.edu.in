@@ -345,12 +345,22 @@
                     </button>
                 </div>
 
-                <div class="input-group">
-                    <label>Leaderboard Visibility (Shows on Events Page)</label>
-                    <select id="hp-status" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Plus Jakarta Sans';">
-                        <option value="false">Deactivated (Hidden)</option>
-                        <option value="true">Activated (Visible)</option>
-                    </select>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="input-group">
+                        <label>Leaderboard Visibility</label>
+                        <select id="hp-status" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Plus Jakarta Sans';">
+                            <option value="false">Deactivated (Hidden)</option>
+                            <option value="true">Activated (Visible)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Championship Status</label>
+                        <select id="hp-ended" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Plus Jakarta Sans';">
+                            <option value="false">Ongoing (Updating)</option>
+                            <option value="true">Ended (Final Results)</option>
+                        </select>
+                    </div>
                 </div>
 
                 <button class="login-btn" onclick="saveHousePoints()" style="margin-top: 20px; background: #0f172a;">Update Championship Leaderboard</button>
@@ -485,13 +495,16 @@
                         container.innerHTML = '';
                         const houses = (data.data && data.data.houses) ? data.data.houses : [];
                         const isActive = (data.data && (data.data.isActive === true || data.data.isActive === 'true'));
+                        const isEnded = (data.data && (data.data.isEnded === true || data.data.isEnded === 'true'));
                         
                         if (houses.length > 0) {
-                            houses.forEach(house => addHouseRow(house));
+                            // Sort by points descending locally for admin view
+                            houses.sort((a,b) => b.points - a.points).forEach(house => addHouseRow(house));
                         } else {
                             addHouseRow();
                         }
                         document.getElementById('hp-status').value = isActive ? "true" : "false";
+                        document.getElementById('hp-ended').value = isEnded ? "true" : "false";
                     } else {
                         renderLists(type, data.data);
                     }
@@ -519,6 +532,7 @@
             })).filter(h => h.name !== '');
 
             const isActive = document.getElementById('hp-status').value === "true";
+            const isEnded = document.getElementById('hp-ended').value === "true";
 
             try {
                 const res = await fetch(`${API_URL}/house-points`, {
@@ -527,7 +541,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ houses, isActive })
+                    body: JSON.stringify({ houses, isActive, isEnded })
                 });
                 const data = await res.json();
                 if (data.success) {
