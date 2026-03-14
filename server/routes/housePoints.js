@@ -24,12 +24,13 @@ router.get('/', async (req, res) => {
 // @access  Private/Admin
 router.post('/', protect, authorize('admin'), async (req, res) => {
   try {
-    const { houses, isActive, isEnded } = req.body;
+    const { title, houses, isActive, isEnded } = req.body;
 
     // We update the most recent record or create a new one
     let points = await HousePoint.findOne().sort({ createdAt: -1 });
 
     if (points) {
+      points.title = title || 'House Championship';
       points.houses = houses || [];
       points.isActive = (isActive === true || isActive === 'true');
       points.isEnded = (isEnded === true || isEnded === 'true');
@@ -39,6 +40,7 @@ router.post('/', protect, authorize('admin'), async (req, res) => {
       await points.save();
     } else {
       points = await HousePoint.create({
+        title: title || 'House Championship',
         houses: houses || [],
         isActive: (isActive === true || isActive === 'true'),
         isEnded: (isEnded === true || isEnded === 'true'),

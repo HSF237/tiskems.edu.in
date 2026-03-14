@@ -335,6 +335,11 @@
 
             <!-- House Points Panel -->
             <div id="house-points-panel" class="upload-section">
+                <div class="input-group" style="margin-bottom: 25px;">
+                    <label>Competition Title</label>
+                    <input type="text" id="hp-title" placeholder="e.g. House Championship 2025" style="width: 100%; padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-family: 'Plus Jakarta Sans'; outline: none;">
+                </div>
+
                 <div id="house-list-container" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
                     <!-- Rows will be added here -->
                 </div>
@@ -496,6 +501,9 @@
                         const houses = (data.data && data.data.houses) ? data.data.houses : [];
                         const isActive = (data.data && (data.data.isActive === true || data.data.isActive === 'true'));
                         const isEnded = (data.data && (data.data.isEnded === true || data.data.isEnded === 'true'));
+                        const title = data.data && data.data.title ? data.data.title : 'House Championship';
+                        
+                        document.getElementById('hp-title').value = title;
                         
                         if (houses.length > 0) {
                             // Sort by points descending locally for admin view
@@ -533,6 +541,7 @@
 
             const isActive = document.getElementById('hp-status').value === "true";
             const isEnded = document.getElementById('hp-ended').value === "true";
+            const title = document.getElementById('hp-title').value.trim() || 'House Championship';
 
             try {
                 const res = await fetch(`${API_URL}/house-points`, {
@@ -541,7 +550,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ houses, isActive, isEnded })
+                    body: JSON.stringify({ title, houses, isActive, isEnded })
                 });
                 const data = await res.json();
                 if (data.success) {

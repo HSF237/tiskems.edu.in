@@ -7,6 +7,10 @@ const HouseSchema = new mongoose.Schema({
 });
 
 const HousePointSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    default: 'House Championship'
+  },
   houses: [HouseSchema],
   isActive: {
     type: Boolean,

@@ -284,7 +284,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-
         /* House Points Styling */
         .house-card {
             background: white;
@@ -306,6 +305,42 @@
         .house-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            .house-card {
+                padding: 15px 10px;
+                border-radius: 15px;
+            }
+            .house-card div[style*="font-size: 3.5rem"] {
+                font-size: 2rem !important;
+            }
+            .house-card div[style*="font-size: 0.8rem"] {
+                font-size: 0.7rem !important;
+            }
+            #leaderboard-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+            .section-head h1 {
+                font-size: 2.2rem !important;
+            }
+        }
+
+        /* Confetti Animation */
+        .confetti-piece {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ffd700;
+            top: 0;
+            opacity: 0;
+            animation: confetti-drop 3s infinite;
+        }
+
+        @keyframes confetti-drop {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
@@ -794,6 +829,7 @@
                 
                 const isActive = result.data && (result.data.isActive === true || result.data.isActive === 'true');
                 const isEnded = result.data && (result.data.isEnded === true || result.data.isEnded === 'true');
+                const title = result.data && result.data.title ? result.data.title : 'House Championship';
                 const headerContent = document.getElementById('hp-header-content');
 
                 if (result.success && isActive && result.data.houses?.length > 0) {
@@ -806,13 +842,25 @@
 
                     if (isEnded) {
                         headerContent.innerHTML = `
-                            <div class="section-head" style="margin-bottom: 20px;">
-                                <div style="display: inline-block; padding: 10px 30px; background: linear-gradient(90deg, #f59e0b, #fbbf24); color: #000; border-radius: 50px; font-weight: 800; font-size: 0.9rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">🏆 CHAMPIONSHIP CONCLUDED</div>
+                            <div class="section-head" style="margin-bottom: 20px; position: relative; overflow: hidden; padding: 40px 10px; border-radius: 30px; background: rgba(251, 191, 36, 0.05);">
+                                <div id="confetti-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+                                <div style="display: inline-block; padding: 10px 30px; background: linear-gradient(90deg, #f59e0b, #fbbf24); color: #000; border-radius: 50px; font-weight: 800; font-size: 0.8rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px;">🏆 CHAMPIONSHIP CONCLUDED</div>
                                 <h1 style="font-size: 3.5rem; color: var(--primary); font-family: 'Outfit'; margin-bottom: 10px;">Congratulations!</h1>
-                                <p style="font-size: 1.2rem; color: var(--text-light);">Final Standings for House Championship 2025–26</p>
+                                <p style="font-size: 1.1rem; color: var(--text-light); font-weight: 600;">Final Standings for ${title}</p>
                                 <div class="divider" style="margin-top: 20px;"></div>
                             </div>
                         `;
+                        
+                        // Add confetti
+                        const container = document.getElementById('confetti-container');
+                        for(let i=0; i<30; i++) {
+                            const conf = document.createElement('div');
+                            conf.className = 'confetti-piece';
+                            conf.style.left = Math.random() * 100 + '%';
+                            conf.style.background = ['#fbbf24', '#3b82f6', '#ef4444', '#22c55e'][Math.floor(Math.random()*4)];
+                            conf.style.animationDelay = Math.random() * 3 + 's';
+                            container.appendChild(conf);
+                        }
                     } else {
                         headerContent.innerHTML = `
                             <div class="section-head" style="margin-bottom: 40px; text-align: left;">
@@ -820,7 +868,7 @@
                                     <div style="width: 12px; height: 12px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite;"></div>
                                     <span style="font-weight: 700; color: #22c55e; font-size: 0.85rem; letter-spacing: 1px;">LIVE LEADERBOARD</span>
                                 </div>
-                                <h2 style="font-size: 2.2rem; color: var(--primary);"><i class="fas fa-trophy" style="color: var(--gold); margin-right: 15px;"></i>House Championship</h2>
+                                <h2 style="font-size: 2.2rem; color: var(--primary);"><i class="fas fa-trophy" style="color: var(--gold); margin-right: 15px;"></i>${title}</h2>
                                 <div class="divider" style="margin: 15px 0;"></div>
                             </div>
                         `;
@@ -866,24 +914,29 @@
     <!-- SMOOTH SCROLL (LENIS) -->
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
     <script>
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof Lenis !== 'undefined') {
+                const lenis = new Lenis({
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    direction: 'vertical',
+                    gestureDirection: 'vertical',
+                    smooth: true,
+                    mouseMultiplier: 1,
+                    smoothTouch: false,
+                    touchMultiplier: 2,
+                });
+
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+
+                requestAnimationFrame(raf);
+            }
         });
-
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-
-        requestAnimationFrame(raf);
     </script>
+
     <script src="admission.js"></script>
 
     <style>
