@@ -3,7 +3,10 @@ import mongoose from 'mongoose';
 const HouseSchema = new mongoose.Schema({
   name: { type: String, required: true },
   color: { type: String, default: '#3b82f6' },
-  points: { type: Number, default: 0 }
+  points: { type: Number, default: 0 },
+  gold: { type: Number, default: 0 },
+  silver: { type: Number, default: 0 },
+  bronze: { type: Number, default: 0 }
 });
 
 const HousePointSchema = new mongoose.Schema({

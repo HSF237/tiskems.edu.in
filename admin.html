@@ -536,7 +536,10 @@
             const houses = Array.from(rows).map(row => ({
                 name: row.querySelector('.house-name').value.trim(),
                 color: row.querySelector('.house-color').value,
-                points: parseInt(row.querySelector('.house-pts').value) || 0
+                points: parseInt(row.querySelector('.house-pts').value) || 0,
+                gold: parseInt(row.querySelector('.house-gold').value) || 0,
+                silver: parseInt(row.querySelector('.house-silver').value) || 0,
+                bronze: parseInt(row.querySelector('.house-bronze').value) || 0
             })).filter(h => h.name !== '');
 
             const isActive = document.getElementById('hp-status').value === "true";
@@ -565,16 +568,23 @@
             }
         }
 
-        function addHouseRow(data = { name: '', color: '#3b82f6', points: 0 }) {
+        function addHouseRow(data = { name: '', color: '#3b82f6', points: 0, gold: 0, silver: 0, bronze: 0 }) {
             const container = document.getElementById('house-list-container');
             const row = document.createElement('div');
             row.className = 'house-row';
-            row.style = 'display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;';
+            row.style = 'background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 10px;';
             row.innerHTML = `
-                <div><label style="font-size:0.75rem">House Name</label><input type="text" class="house-name" value="${data.name}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ddd"></div>
-                <div><label style="font-size:0.75rem">Color</label><input type="color" class="house-color" value="${data.color}" style="width:100%; height:38px; padding:2px; border-radius:8px; border:1px solid #ddd"></div>
-                <div><label style="font-size:0.75rem">Points</label><input type="number" class="house-pts" value="${data.points}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ddd"></div>
-                <button onclick="this.parentElement.remove()" style="height:38px; align-self:end; background:#fee2e2; color:#ef4444; border:none; padding:0 12px; border-radius:8px; cursor:pointer"><i class="fas fa-trash"></i></button>
+                <div style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px;">
+                    <div><label style="font-size:0.75rem">House Name</label><input type="text" class="house-name" value="${data.name || ''}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ddd"></div>
+                    <div><label style="font-size:0.75rem">Color</label><input type="color" class="house-color" value="${data.color || '#3b82f6'}" style="width:100%; height:38px; padding:2px; border-radius:8px; border:1px solid #ddd"></div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="height:38px; align-self:end; background:#fee2e2; color:#ef4444; border:none; padding:0 12px; border-radius:8px; cursor:pointer"><i class="fas fa-trash"></i></button>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
+                    <div><label style="font-size:0.75rem">🥇 Gold</label><input type="number" class="house-gold" value="${data.gold || 0}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ddd"></div>
+                    <div><label style="font-size:0.75rem">🥈 Silv</label><input type="number" class="house-silver" value="${data.silver || 0}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ddd"></div>
+                    <div><label style="font-size:0.75rem">🥉 Bron</label><input type="number" class="house-bronze" value="${data.bronze || 0}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ddd"></div>
+                    <div><label style="font-size:0.75rem">Total Pts</label><input type="number" class="house-pts" value="${data.points || 0}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ddd"></div>
+                </div>
             `;
             container.appendChild(row);
         }

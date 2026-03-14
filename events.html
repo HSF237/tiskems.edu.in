@@ -893,7 +893,25 @@
                             ${badgeHtml}
                             <div style="font-size: 0.8rem; font-weight: 800; color: ${house.color}; text-transform: uppercase; margin-bottom: 10px;">${house.name}</div>
                             <div style="font-size: 3.5rem; font-weight: 800; color: var(--primary); font-family: 'Outfit'; line-height: 1;">${house.points}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 5px; font-weight: 600;">Total Score</div>
+                            <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 2px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Total Points</div>
+                            
+                            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #e2e8f0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="font-size: 1.2rem; filter: drop-shadow(0 2px 4px rgba(212,175,55,0.3));">🥇</span>
+                                    <span style="font-size: 1rem; font-weight: 800; color: #d4af37;">${house.gold || 0}</span>
+                                    <span style="font-size: 0.6rem; font-weight: 600; color: var(--text-light);">GOLD</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="font-size: 1.2rem; filter: drop-shadow(0 2px 4px rgba(192,192,192,0.3));">🥈</span>
+                                    <span style="font-size: 1rem; font-weight: 800; color: #a1a1aa;">${house.silver || 0}</span>
+                                    <span style="font-size: 0.6rem; font-weight: 600; color: var(--text-light);">SILVER</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <span style="font-size: 1.2rem; filter: drop-shadow(0 2px 4px rgba(205,127,50,0.3));">🥉</span>
+                                    <span style="font-size: 1rem; font-weight: 800; color: #b45309;">${house.bronze || 0}</span>
+                                    <span style="font-size: 0.6rem; font-weight: 600; color: var(--text-light);">BRONZE</span>
+                                </div>
+                            </div>
                         `;
                         grid.appendChild(card);
                         setTimeout(() => card.classList.add('visible'), i * 100);
