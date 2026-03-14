@@ -274,7 +274,6 @@
                 Management</div>
             <div class="nav-item" data-panel="countdown" onclick="showPanel('countdown')"><i class="fas fa-clock"></i> Countdown</div>
             <div class="nav-item" data-panel="house-points" onclick="showPanel('house-points')"><i class="fas fa-trophy"></i> House Points</div>
-            <div class="nav-item" data-panel="status" onclick="showPanel('status')"><i class="fas fa-signal"></i> Live Status</div>
             <div class="nav-item btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
         </div>
 
@@ -371,35 +370,6 @@
 
                 <button class="login-btn" onclick="saveHousePoints()" style="margin-top: 20px; background: #0f172a;">Update Championship Leaderboard</button>
             </div>
-
-            <!-- School Status Panel -->
-            <div id="status-panel" class="upload-section">
-                <div class="input-group">
-                    <label>Status Message</label>
-                    <input type="text" id="status-text" placeholder="e.g. School is currently Open" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px;">
-                </div>
-
-                <div class="input-group">
-                    <label>Indicator Color</label>
-                    <select id="status-type" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px;">
-                        <option value="open">Green (Open)</option>
-                        <option value="break">Yellow (Break/Lunch)</option>
-                        <option value="closed">Red (Closed/Holiday)</option>
-                        <option value="special">Blue (Special Event)</option>
-                    </select>
-                </div>
-
-                <div class="input-group">
-                    <label>Visibility</label>
-                    <select id="status-active" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px;">
-                        <option value="true">Visible</option>
-                        <option value="false">Hidden</option>
-                    </select>
-                </div>
-
-                <button class="login-btn" onclick="saveSchoolStatus()" style="margin-top: 20px;">Update Live School Status</button>
-            </div>
-
 
 
 
@@ -543,12 +513,6 @@
                         }
                         document.getElementById('hp-status').value = isActive ? "true" : "false";
                         document.getElementById('hp-ended').value = isEnded ? "true" : "false";
-                    } else if (type === 'status') {
-                        if (data.data) {
-                            document.getElementById('status-text').value = data.data.statusText || '';
-                            document.getElementById('status-type').value = data.data.statusType || 'open';
-                            document.getElementById('status-active').value = data.data.isActive ? "true" : "false";
-                        }
                     } else {
                         renderLists(type, data.data);
                     }
@@ -615,31 +579,6 @@
             container.appendChild(row);
         }
 
-
-        async function saveSchoolStatus() {
-            const statusText = document.getElementById('status-text').value;
-            const statusType = document.getElementById('status-type').value;
-            const isActive = document.getElementById('status-active').value === "true";
-
-            if (!statusText) return alert('Please enter a status message');
-
-            try {
-                const res = await fetch(`${API_URL}/school-status`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ statusText, statusType, isActive })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    alert('School status updated successfully!');
-                }
-            } catch (err) {
-                alert('Update failed');
-            }
-        }
 
         async function saveCountdown() {
             const eventName = document.getElementById('countdown-event').value;

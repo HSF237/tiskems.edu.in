@@ -17,7 +17,6 @@ import galleryRoutes from './routes/gallery.js';
 import certificateRoutes from './routes/certificates.js';
 import countdownRoutes from './routes/countdown.js';
 import housePointRoutes from './routes/housePoints.js';
-import schoolStatusRoutes from './routes/schoolStatus.js';
 
 // Load environment variables (Moved to absolute top via import)
 
@@ -52,7 +51,6 @@ app.use('/api/gallery', galleryRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/countdown', countdownRoutes);
 app.use('/api/house-points', housePointRoutes);
-app.use('/api/school-status', schoolStatusRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {
