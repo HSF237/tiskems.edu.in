@@ -273,7 +273,6 @@
             <div class="nav-item" data-panel="tc" onclick="showPanel('tc')"><i class="fas fa-file-pdf"></i> TC
                 Management</div>
             <div class="nav-item" data-panel="countdown" onclick="showPanel('countdown')"><i class="fas fa-clock"></i> Countdown</div>
-            <div class="nav-item" data-panel="house-points" onclick="showPanel('house-points')"><i class="fas fa-trophy"></i> House Points</div>
             <div class="nav-item btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
         </div>
 
@@ -333,26 +332,6 @@
                 <button class="login-btn" onclick="saveCountdown()" style="margin-top: 20px;">Update Live Countdown</button>
             </div>
 
-            <!-- House Points Panel -->
-            <div id="house-points-panel" class="upload-section">
-                <div id="house-list-container" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
-                    <!-- Dynamic house inputs will be injected here -->
-                </div>
-
-                <button class="btn" onclick="addHouseRow()" style="background: #f1f5f9; color: var(--primary); width: auto; margin-bottom: 30px;">
-                    <i class="fas fa-plus"></i> Add New House
-                </button>
-
-                <div class="input-group">
-                    <label>Leaderboard Visibility (Shows on Events Page)</label>
-                    <select id="hp-status" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Inter';">
-                        <option value="false">Deactivated (Hidden)</option>
-                        <option value="true">Activated (Visible)</option>
-                    </select>
-                </div>
-
-                <button class="login-btn" onclick="saveHousePoints()" style="margin-top: 20px; background: #0f172a;">Update Championship Leaderboard</button>
-            </div>
 
             <!-- Disclosure upload removed -->
         </div>
@@ -476,32 +455,12 @@
                                 document.getElementById('countdown-date').value = localISOTime;
                             }
                         }
-                    } else if (type === 'house-points') {
-                        const container = document.getElementById('house-list-container');
-                        container.innerHTML = '';
-                        
-                        // Handle the logic even if data is null (initial state)
-                        const houses = (data.data && data.data.houses) ? data.data.houses : [];
-                        const isActive = (data.data && (data.data.isActive === true || data.data.isActive === 'true'));
-
-                        if (houses.length > 0) {
-                            houses.forEach(house => addHouseRow(house));
-                        } else {
-                            addHouseRow(); // Add empty row if none exist
-                        }
-                        
-                        document.getElementById('hp-status').value = isActive ? "true" : "false";
-                        console.log('✅ House points loaded:', houses.length, 'houses, Active:', isActive);
                     } else {
                         renderLists(type, data.data);
                     }
                 }
             } catch (err) {
                 console.error(`Failed to load ${type}`, err);
-                if (type === 'house-points') {
-                    const container = document.getElementById('house-list-container');
-                    container.innerHTML = `<p style="color:#ef4444; font-size:0.85rem;"><i class="fas fa-exclamation-triangle"></i> Failed to connect to backend. Please check if the server is running.</p>`;
-                }
             }
         }
 
@@ -532,71 +491,7 @@
             }
         }
 
-        async function saveHousePoints() {
-            const btn = document.querySelector('button[onclick="saveHousePoints()"]');
-            const originalText = btn.innerText;
-            btn.innerText = 'Updating...';
-            btn.disabled = true;
 
-            const rows = document.querySelectorAll('.house-row');
-            const houses = Array.from(rows).map(row => ({
-                name: row.querySelector('.house-name').value.trim(),
-                color: row.querySelector('.house-color').value,
-                points: parseInt(row.querySelector('.house-pts').value) || 0
-            })).filter(h => h.name !== ''); // Don't save empty named houses
-
-            const isActive = document.getElementById('hp-status').value === "true";
-
-            try {
-                const res = await fetch(`${API_URL}/house-points`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ houses, isActive })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    alert('House Championship updated successfully!');
-                    console.log('✅ Save successful:', data.data);
-                    loadData('house-points');
-                } else {
-                    alert('Save failed: ' + (data.message || 'Unknown error'));
-                }
-            } catch (err) {
-                console.error('Update failed', err);
-                alert('Connection error. Is the server running?');
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        function addHouseRow(data = { name: '', color: '#3b82f6', points: 0 }) {
-            const container = document.getElementById('house-list-container');
-            const row = document.createElement('div');
-            row.className = 'house-row';
-            row.style = 'display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;';
-            row.innerHTML = `
-                <div class="input-group" style="margin-bottom:0">
-                    <label style="font-size:0.75rem">House Name</label>
-                    <input type="text" class="house-name" value="${data.name}" placeholder="e.g. Red House">
-                </div>
-                <div class="input-group" style="margin-bottom:0">
-                    <label style="font-size:0.75rem">Color</label>
-                    <input type="color" class="house-color" value="${data.color}" style="height:42px; padding:2px">
-                </div>
-                <div class="input-group" style="margin-bottom:0">
-                    <label style="font-size:0.75rem">Points</label>
-                    <input type="number" class="house-pts" value="${data.points}">
-                </div>
-                <button onclick="this.parentElement.remove()" style="background:#fee2e2; color:#ef4444; border:none; width:42px; height:42px; border-radius:10px; cursor:pointer">
-                    <i class="fas fa-trash"></i>
-                </button>
-            `;
-            container.appendChild(row);
-        }
 
         function logout() {
             localStorage.removeItem('tisk_token');
