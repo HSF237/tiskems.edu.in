@@ -273,6 +273,7 @@
             <div class="nav-item" data-panel="tc" onclick="showPanel('tc')"><i class="fas fa-file-pdf"></i> TC
                 Management</div>
             <div class="nav-item" data-panel="countdown" onclick="showPanel('countdown')"><i class="fas fa-clock"></i> Countdown</div>
+            <div class="nav-item" data-panel="house-points" onclick="showPanel('house-points')"><i class="fas fa-trophy"></i> House Points</div>
             <div class="nav-item btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
         </div>
 
@@ -331,6 +332,30 @@
                 </div>
                 <button class="login-btn" onclick="saveCountdown()" style="margin-top: 20px;">Update Live Countdown</button>
             </div>
+
+            <!-- House Points Panel -->
+            <div id="house-points-panel" class="upload-section">
+                <div id="house-list-container" style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
+                    <!-- Rows will be added here -->
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 30px;">
+                    <button class="btn" onclick="addHouseRow()" style="background: #f1f5f9; color: var(--primary); padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-plus"></i> Add New House
+                    </button>
+                </div>
+
+                <div class="input-group">
+                    <label>Leaderboard Visibility (Shows on Events Page)</label>
+                    <select id="hp-status" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: 'Plus Jakarta Sans';">
+                        <option value="false">Deactivated (Hidden)</option>
+                        <option value="true">Activated (Visible)</option>
+                    </select>
+                </div>
+
+                <button class="login-btn" onclick="saveHousePoints()" style="margin-top: 20px; background: #0f172a;">Update Championship Leaderboard</button>
+            </div>
+
 
 
             <!-- Disclosure upload removed -->
@@ -455,14 +480,82 @@
                                 document.getElementById('countdown-date').value = localISOTime;
                             }
                         }
+                    } else if (type === 'house-points') {
+                        const container = document.getElementById('house-list-container');
+                        container.innerHTML = '';
+                        const houses = (data.data && data.data.houses) ? data.data.houses : [];
+                        const isActive = (data.data && (data.data.isActive === true || data.data.isActive === 'true'));
+                        
+                        if (houses.length > 0) {
+                            houses.forEach(house => addHouseRow(house));
+                        } else {
+                            addHouseRow();
+                        }
+                        document.getElementById('hp-status').value = isActive ? "true" : "false";
                     } else {
                         renderLists(type, data.data);
                     }
                 }
             } catch (err) {
                 console.error(`Failed to load ${type}`, err);
+                if (type === 'house-points') {
+                    document.getElementById('house-list-container').innerHTML = 
+                        `<p style="color:#ef4444;"><i class="fas fa-wifi"></i> Please wait, connecting to server...</p>`;
+                }
             }
         }
+
+        async function saveHousePoints() {
+            const btn = document.querySelector('button[onclick="saveHousePoints()"]');
+            const originalText = btn.innerText;
+            btn.innerText = 'Updating...';
+            btn.disabled = true;
+
+            const rows = document.querySelectorAll('.house-row');
+            const houses = Array.from(rows).map(row => ({
+                name: row.querySelector('.house-name').value.trim(),
+                color: row.querySelector('.house-color').value,
+                points: parseInt(row.querySelector('.house-pts').value) || 0
+            })).filter(h => h.name !== '');
+
+            const isActive = document.getElementById('hp-status').value === "true";
+
+            try {
+                const res = await fetch(`${API_URL}/house-points`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ houses, isActive })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('House Championship updated successfully!');
+                    loadData('house-points');
+                }
+            } catch (err) {
+                alert('Connection error');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function addHouseRow(data = { name: '', color: '#3b82f6', points: 0 }) {
+            const container = document.getElementById('house-list-container');
+            const row = document.createElement('div');
+            row.className = 'house-row';
+            row.style = 'display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;';
+            row.innerHTML = `
+                <div><label style="font-size:0.75rem">House Name</label><input type="text" class="house-name" value="${data.name}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ddd"></div>
+                <div><label style="font-size:0.75rem">Color</label><input type="color" class="house-color" value="${data.color}" style="width:100%; height:38px; padding:2px; border-radius:8px; border:1px solid #ddd"></div>
+                <div><label style="font-size:0.75rem">Points</label><input type="number" class="house-pts" value="${data.points}" style="width:100%; padding:8px; border-radius:8px; border:1px solid #ddd"></div>
+                <button onclick="this.parentElement.remove()" style="height:38px; align-self:end; background:#fee2e2; color:#ef4444; border:none; padding:0 12px; border-radius:8px; cursor:pointer"><i class="fas fa-trash"></i></button>
+            `;
+            container.appendChild(row);
+        }
+
 
         async function saveCountdown() {
             const eventName = document.getElementById('countdown-event').value;
