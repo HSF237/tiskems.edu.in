@@ -342,6 +342,170 @@
                 padding: 6px 10px;
                 font-size: 0.7rem;
             }
+        }
+
+        /* --- Global Highly Creative Space-Saving Curriculum --- */
+        .curriculum-accordion {
+            max-width: 1200px;
+            margin: 40px auto 0;
+            display: flex; /* Flex instead of Grid for independent columns */
+            gap: 20px;
+            align-items: start;
+        }
+
+        .accordion-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .accordion-item {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.03);
+            border-left: 6px solid var(--accent);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .accordion-item:nth-child(3n+1) { border-left-color: var(--accent); }
+        .accordion-item:nth-child(3n+2) { border-left-color: var(--gold); }
+        .accordion-item:nth-child(3n+3) { border-left-color: #10b981; }
+
+        .accordion-item.active {
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.12);
+            border-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .accordion-header {
+            padding: 12px 20px; /* Reduced padding */
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: white;
+            transition: background 0.3s;
+        }
+
+        .class-info {
+            display: flex;
+            align-items: center;
+            gap: 12px; /* Tighter gap */
+        }
+
+        .class-info h4 {
+            margin: 0;
+            font-size: 1.15rem; /* Smaller font */
+            color: var(--primary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+
+        .subject-count {
+            font-size: 0.7rem; /* Tiny badge */
+            background: #f1f5f9;
+            padding: 2px 8px; /* Compact padding */
+            border-radius: 20px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .accordion-header i {
+            color: var(--accent);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.9rem; /* Smaller icon */
+        }
+
+        .accordion-item.active .accordion-header i {
+            transform: rotate(180deg);
+            color: var(--gold);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fafbfc;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 800px;
+        }
+
+        .subject-grid {
+            padding: 15px 20px 20px; /* Tighter container */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* More columns per row */
+            gap: 8px; /* Reduced gap */
+        }
+
+        .subject-card {
+            padding: 8px 12px; /* Compact cards */
+            background: white;
+            border: 1px solid rgba(0,0,0,0.04);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2sease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .subject-card i {
+            width: 28px; /* Smaller icon wrapper */
+            height: 28px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: var(--accent);
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+
+        .subject-card span {
+            font-size: 0.85rem; /* Tighter text */
+            font-weight: 600;
+            color: var(--primary);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .subject-card:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .subject-card:hover span, .subject-card:hover i {
+            color: white;
+        }
+
+        .subject-card:hover i {
+            background: rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 1024px) {
+            .curriculum-accordion {
+                flex-direction: column; /* Stack columns on mobile */
+            }
+            .accordion-header { padding: 18px 20px; }
+            .accordion-header h4 { font-size: 1.1rem; }
+            .class-info { gap: 10px; }
+            .subject-grid { 
+                grid-template-columns: repeat(2, 1fr); 
+                padding: 15px;
+                gap: 10px;
+            }
+            .subject-card { padding: 12px; border-radius: 10px; }
+            .subject-card span { font-size: 0.8rem; }
+            .subject-card i { width: 30px; height: 30px; font-size: 0.8rem; }
+            
             .facilities-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 15px;
@@ -398,25 +562,250 @@
     </section>
 
     <div class="container">
+        <!-- Curriculum Accordion -->
         <div class="curriculum-card">
-            <h3>CBSE Curriculum</h3>
-            <p style="color: var(--text-light); margin-bottom: 20px; line-height: 1.8;">
-                We follow the Central Board of Secondary Education (CBSE) curriculum,
-                which is recognized nationwide and internationally. Our curriculum is
-                designed to provide a balanced education that promotes holistic development.
-            </p>
-            <h4 style="color: var(--primary); margin: 25px 0 15px;">Subjects Offered</h4>
-            <div class="subjects-grid">
-                <div class="subject-tag">English</div>
-                <div class="subject-tag">Mathematics</div>
-                <div class="subject-tag">Science</div>
-                <div class="subject-tag">Social Studies</div>
-                <div class="subject-tag">Hindi</div>
-                <div class="subject-tag">Malayalam</div>
-                <div class="subject-tag">Computer Science</div>
-                <div class="subject-tag">Physical Education</div>
-                <div class="subject-tag">Arts</div>
-                <div class="subject-tag">General Knowledge</div>
+            <div style="text-align: center; margin-bottom: 40px;">
+                <span class="level-badge" style="background: rgba(251, 191, 36, 0.1); color: var(--gold); margin-bottom: 10px;">NCERT & CBSE</span>
+                <h3>Academic Subject Breakdown</h3>
+                <p style="color: var(--text-light); max-width: 700px; margin: 10px auto;">
+                    Select a class to view the full list of subjects following the National Curriculum Framework.
+                </p>
+            </div>
+
+            <div class="curriculum-accordion">
+                <!-- Column 1: Odd Classes -->
+                <div class="accordion-column">
+                    <!-- Class 1 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="class-info">
+                                <h4>Class I</h4>
+                                <span class="subject-count">8 Subjects</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="subject-grid">
+                                <div class="subject-card"><i class="fas fa-book-open"></i> <span>English</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Malayalam</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Hindi</span></div>
+                                <div class="subject-card"><i class="fas fa-plus-minus"></i> <span>Mathematics</span></div>
+                                <div class="subject-card"><i class="fas fa-leaf"></i> <span>EVS</span></div>
+                                <div class="subject-card"><i class="fas fa-palette"></i> <span>Art & Craft</span></div>
+                                <div class="subject-card"><i class="fas fa-heart"></i> <span>Moral Science</span></div>
+                                <div class="subject-card"><i class="fas fa-running"></i> <span>Physical Ed</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class 3 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="class-info">
+                                <h4>Class III</h4>
+                                <span class="subject-count">8 Subjects</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="subject-grid">
+                                <div class="subject-card"><i class="fas fa-book-open"></i> <span>English</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Malayalam</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Hindi</span></div>
+                                <div class="subject-card"><i class="fas fa-plus-minus"></i> <span>Mathematics</span></div>
+                                <div class="subject-card"><i class="fas fa-vial"></i> <span>Science</span></div>
+                                <div class="subject-card"><i class="fas fa-globe"></i> <span>Social Studies</span></div>
+                                <div class="subject-card"><i class="fas fa-desktop"></i> <span>Computer Sci</span></div>
+                                <div class="subject-card"><i class="fas fa-palette"></i> <span>Art & Craft</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class 5 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="class-info">
+                                <h4>Class V</h4>
+                                <span class="subject-count">8 Subjects</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="subject-grid">
+                                <div class="subject-card"><i class="fas fa-book-open"></i> <span>English</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Malayalam</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Hindi</span></div>
+                                <div class="subject-card"><i class="fas fa-plus-minus"></i> <span>Mathematics</span></div>
+                                <div class="subject-card"><i class="fas fa-vial"></i> <span>General Science</span></div>
+                                <div class="subject-card"><i class="fas fa-globe"></i> <span>Social Science</span></div>
+                                <div class="subject-card"><i class="fas fa-desktop"></i> <span>ICT Skills</span></div>
+                                <div class="subject-card"><i class="fas fa-heart"></i> <span>Value Ed</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class 7 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="class-info">
+                                <h4>Class VII</h4>
+                                <span class="subject-count">8 Subjects</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="subject-grid">
+                                <div class="subject-card"><i class="fas fa-book-open"></i> <span>English</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Malayalam</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Hindi</span></div>
+                                <div class="subject-card"><i class="fas fa-plus-minus"></i> <span>Mathematics</span></div>
+                                <div class="subject-card"><i class="fas fa-vial"></i> <span>Science</span></div>
+                                <div class="subject-card"><i class="fas fa-globe"></i> <span>Social Science</span></div>
+                                <div class="subject-card"><i class="fas fa-laptop-code"></i> <span>ICT Skills</span></div>
+                                <div class="subject-card"><i class="fas fa-running"></i> <span>Physical Ed</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class 9 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="class-info">
+                                <h4>Class IX</h4>
+                                <span class="subject-count">7 Subjects</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="subject-grid">
+                                <div class="subject-card"><i class="fas fa-book-open"></i> <span>English</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Malayalam / Hindi</span></div>
+                                <div class="subject-card"><i class="fas fa-plus-minus"></i> <span>Mathematics</span></div>
+                                <div class="subject-card"><i class="fas fa-atom"></i> <span>Science</span></div>
+                                <div class="subject-card"><i class="fas fa-globe-asia"></i> <span>Social Science</span></div>
+                                <div class="subject-card"><i class="fas fa-brain"></i> <span>AI / IT</span></div>
+                                <div class="subject-card"><i class="fas fa-heartbeat"></i> <span>HPE</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Even Classes -->
+                <div class="accordion-column">
+                    <!-- Class 2 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="class-info">
+                                <h4>Class II</h4>
+                                <span class="subject-count">8 Subjects</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="subject-grid">
+                                <div class="subject-card"><i class="fas fa-book-open"></i> <span>English</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Malayalam</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Hindi</span></div>
+                                <div class="subject-card"><i class="fas fa-plus-minus"></i> <span>Mathematics</span></div>
+                                <div class="subject-card"><i class="fas fa-leaf"></i> <span>EVS</span></div>
+                                <div class="subject-card"><i class="fas fa-palette"></i> <span>Art & Craft</span></div>
+                                <div class="subject-card"><i class="fas fa-heart"></i> <span>Moral Science</span></div>
+                                <div class="subject-card"><i class="fas fa-running"></i> <span>Physical Ed</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class 4 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="class-info">
+                                <h4>Class IV</h4>
+                                <span class="subject-count">8 Subjects</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="subject-grid">
+                                <div class="subject-card"><i class="fas fa-book-open"></i> <span>English</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Malayalam</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Hindi</span></div>
+                                <div class="subject-card"><i class="fas fa-plus-minus"></i> <span>Mathematics</span></div>
+                                <div class="subject-card"><i class="fas fa-vial"></i> <span>Science</span></div>
+                                <div class="subject-card"><i class="fas fa-globe"></i> <span>Social Studies</span></div>
+                                <div class="subject-card"><i class="fas fa-desktop"></i> <span>Computer Sci</span></div>
+                                <div class="subject-card"><i class="fas fa-running"></i> <span>Physical Ed</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class 6 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="class-info">
+                                <h4>Class VI</h4>
+                                <span class="subject-count">8 Subjects</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="subject-grid">
+                                <div class="subject-card"><i class="fas fa-book-open"></i> <span>English</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Malayalam</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Hindi</span></div>
+                                <div class="subject-card"><i class="fas fa-plus-minus"></i> <span>Mathematics</span></div>
+                                <div class="subject-card"><i class="fas fa-vial"></i> <span>Science</span></div>
+                                <div class="subject-card"><i class="fas fa-globe"></i> <span>Social Science</span></div>
+                                <div class="subject-card"><i class="fas fa-laptop-code"></i> <span>ICT & Coding</span></div>
+                                <div class="subject-card"><i class="fas fa-running"></i> <span>Physical Ed</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class 8 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="class-info">
+                                <h4>Class VIII</h4>
+                                <span class="subject-count">8 Subjects</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="subject-grid">
+                                <div class="subject-card"><i class="fas fa-book-open"></i> <span>English</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Malayalam</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Hindi</span></div>
+                                <div class="subject-card"><i class="fas fa-plus-minus"></i> <span>Mathematics</span></div>
+                                <div class="subject-card"><i class="fas fa-vial"></i> <span>Science</span></div>
+                                <div class="subject-card"><i class="fas fa-globe"></i> <span>Social Science</span></div>
+                                <div class="subject-card"><i class="fas fa-microchip"></i> <span>Robotics</span></div>
+                                <div class="subject-card"><i class="fas fa-running"></i> <span>Physical Ed</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class 10 -->
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="class-info">
+                                <h4>Class X</h4>
+                                <span class="subject-count">7 Subjects</span>
+                            </div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="subject-grid">
+                                <div class="subject-card"><i class="fas fa-graduation-cap"></i> <span>Board Prep</span></div>
+                                <div class="subject-card"><i class="fas fa-language"></i> <span>Malayalam / Hindi</span></div>
+                                <div class="subject-card"><i class="fas fa-plus-minus"></i> <span>Mathematics</span></div>
+                                <div class="subject-card"><i class="fas fa-atom"></i> <span>Science</span></div>
+                                <div class="subject-card"><i class="fas fa-globe-asia"></i> <span>Social Science</span></div>
+                                <div class="subject-card"><i class="fas fa-brain"></i> <span>AI / IT</span></div>
+                                <div class="subject-card"><i class="fas fa-heartbeat"></i> <span>HPE / SEWA</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -668,6 +1057,24 @@
         const backToTopBtn = document.getElementById('backToTop');
         window.addEventListener('scroll', () => { if (window.scrollY > 500) { backToTopBtn.classList.add('show'); } else { backToTopBtn.classList.remove('show'); } });
         function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+        // Accordion Logic
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                const isActive = item.classList.contains('active');
+
+                // Close all other items (Exclusive behavior)
+                document.querySelectorAll('.accordion-item').forEach(otherItem => {
+                    otherItem.classList.remove('active');
+                });
+
+                // Toggle current item
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
         // Scroll animation for facility cards
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry, index) => {
