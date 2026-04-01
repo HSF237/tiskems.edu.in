@@ -34,10 +34,31 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Database Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tisk_school')
-  .then(() => console.log('✅ MongoDB Connected'))
-  .catch((err) => console.error('❌ MongoDB Connection Error:', err));
+// Database Connection & Server Initialization
+const startServer = async () => {
+  try {
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/tisk_school';
+    console.log('⏳ Connecting to MongoDB...');
+    
+    // Connect with a 10s timeout to avoid infinite buffering
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 10000,
+    });
+    
+    console.log('✅ MongoDB Connected Successfully');
+
+    // Only start listening after successful connection
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error('❌ CRITICAL: MongoDB Connection Error:', err.message);
+    // Exit process with failure so Render can attempt a fresh restart
+    process.exit(1);
+  }
+};
+
+startServer();
 
 // API Routes
 app.use('/api/auth', authRoutes);
