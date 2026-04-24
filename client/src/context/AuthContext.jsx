@@ -1,15 +1,13 @@
 import { createContext, useState, useEffect, useContext } from 'react'
-import axios from 'axios'
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged 
+} from 'firebase/auth'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { auth, db } from '../config/firebase'
 import toast from 'react-hot-toast'
-
-// Attach auth token to every request
-axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
 
 const AuthContext = createContext()
 
@@ -26,56 +24,64 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      try {
-        const response = await axios.get('/api/auth/me', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        setUser(response.data.user)
-      } catch (error) {
-        localStorage.removeItem('token')
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        // Get additional user data from Firestore
+        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
+        if (userDoc.exists()) {
+          setUser({ uid: firebaseUser.uid, ...userDoc.data() })
+        } else {
+          setUser({ uid: firebaseUser.uid, email: firebaseUser.email })
+        }
+      } else {
+        setUser(null)
       }
-    }
-    setLoading(false)
-  }
+      setLoading(false)
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post('/api/auth/login', { email, password })
-      const { token, user } = response.data
-      localStorage.setItem('token', token)
-      setUser(user)
+      const result = await signInWithEmailAndPassword(auth, email, password)
       toast.success('Login successful!')
-      return { success: true }
+      return { success: true, user: result.user }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed')
-      return { success: false, error: error.response?.data?.message }
+      toast.error(error.message || 'Login failed')
+      return { success: false, error: error.message }
     }
   }
 
   const register = async (userData) => {
+    const { email, password, name, role, ...otherData } = userData
     try {
-      const response = await axios.post('/api/auth/register', userData)
-      const { token, user } = response.data
-      localStorage.setItem('token', token)
-      setUser(user)
+      const result = await createUserWithEmailAndPassword(auth, email, password)
+      
+      // Create user profile in Firestore
+      await setDoc(doc(db, 'users', result.user.uid), {
+        name,
+        email,
+        role: role || 'parent',
+        ...otherData,
+        createdAt: new Date().toISOString()
+      })
+
       toast.success('Registration successful!')
-      return { success: true }
+      return { success: true, user: result.user }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed')
-      return { success: false, error: error.response?.data?.message }
+      toast.error(error.message || 'Registration failed')
+      return { success: false, error: error.message }
     }
   }
 
-  const logout = () => {
-    localStorage.removeItem('token')
-    setUser(null)
-    toast.success('Logged out successfully')
+  const logout = async () => {
+    try {
+      await signOut(auth)
+      toast.success('Logged out successfully')
+    } catch (error) {
+      toast.error('Logout failed')
+    }
   }
 
   const value = {
@@ -89,4 +95,5 @@ export const AuthProvider = ({ children }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
+
 

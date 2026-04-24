@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import axios from 'axios'
+import { collection, getDocs, addDoc, query, where, orderBy, serverTimestamp } from 'firebase/firestore'
+import { db } from '../config/firebase'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import { FaRupeeSign, FaCreditCard, FaCheckCircle, FaFileDownload } from 'react-icons/fa'
@@ -19,8 +20,12 @@ const Fees = () => {
 
   const fetchFeeStructures = async () => {
     try {
-      const response = await axios.get('/api/fees/structure')
-      setFeeStructures(response.data.data)
+      const querySnapshot = await getDocs(collection(db, 'feeStructures'))
+      const fees = querySnapshot.docs.map(doc => ({
+        _id: doc.id,
+        ...doc.data()
+      }))
+      setFeeStructures(fees)
       if (user?.class) {
         setSelectedClass(user.class)
       }
@@ -33,65 +38,42 @@ const Fees = () => {
 
   const fetchPaymentHistory = async () => {
     try {
-      const response = await axios.get('/api/fees/history')
-      setPayments(response.data.data || [])
+      if (!user?.uid) return
+      const q = query(
+        collection(db, 'payments'),
+        where('userId', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      )
+      const querySnapshot = await getDocs(q)
+      const paymentList = querySnapshot.docs.map(doc => ({
+        _id: doc.id,
+        ...doc.data()
+      }))
+      setPayments(paymentList)
     } catch (error) {
       console.error('Error fetching payment history:', error)
     }
   }
 
-  const handlePayment = async (feeStructureId) => {
+  const handlePayment = async (feeStructure) => {
     try {
-      const response = await axios.post('/api/fees/payment', {
-        feeStructureId,
-        studentId: user?.id
+      // Record payment intent in Firestore
+      await addDoc(collection(db, 'payments'), {
+        userId: user?.uid,
+        userName: user?.name || user?.email,
+        feeClass: feeStructure.class,
+        amount: feeStructure.totalFee,
+        status: 'pending',
+        createdAt: serverTimestamp()
       })
 
-      const { order, paymentId, key } = response.data
-
-      // Load Razorpay script
-      const script = document.createElement('script')
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-      script.onload = () => {
-        const options = {
-          key: key,
-          amount: order.amount,
-          currency: order.currency,
-          name: 'TISK English Medium School',
-          description: 'Fee Payment',
-          order_id: order.id,
-          handler: async function (response) {
-            try {
-              await axios.post('/api/fees/verify', {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                paymentId: paymentId
-              })
-              toast.success('Payment successful!')
-              fetchPaymentHistory()
-            } catch (error) {
-              toast.error('Payment verification failed')
-            }
-          },
-          prefill: {
-            name: user?.name || '',
-            email: user?.email || '',
-            contact: user?.phone || ''
-          },
-          theme: {
-            color: '#3b82f6'
-          }
-        }
-
-        const razorpay = new window.Razorpay(options)
-        razorpay.open()
-      }
-      document.body.appendChild(script)
+      toast.success('Payment recorded! Contact school office to complete payment.')
+      fetchPaymentHistory()
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to initiate payment')
+      toast.error('Failed to record payment')
     }
   }
+
 
   const selectedFee = feeStructures.find(f => f.class === selectedClass)
 
@@ -170,7 +152,7 @@ const Fees = () => {
                 </div>
 
                 <button
-                  onClick={() => handlePayment(selectedFee._id)}
+                  onClick={() => handlePayment(selectedFee)}
                   className="w-full btn btn-accent mt-6"
                 >
                   <FaCreditCard /> Pay Now

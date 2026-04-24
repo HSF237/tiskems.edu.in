@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import axios from 'axios'
+import { collection, getDocs, orderBy, query } from 'firebase/firestore'
+import { db } from '../config/firebase'
 import { FaTimes, FaSearchPlus } from 'react-icons/fa'
 
 const Gallery = () => {
@@ -14,10 +15,13 @@ const Gallery = () => {
 
   const fetchGallery = async () => {
     try {
-      const response = await axios.get('/api/gallery')
-      const formatted = response.data.data.map(item => {
+      const q = query(collection(db, 'gallery'), orderBy('createdAt', 'desc'))
+      const querySnapshot = await getDocs(q)
+      const galleryList = querySnapshot.docs.map(doc => {
+        const item = { _id: doc.id, ...doc.data() }
+        
         // Automatically convert Drive links to thumbnails for high quality display
-        if (item.filePath.includes('drive.google.com')) {
+        if (item.filePath && item.filePath.includes('drive.google.com')) {
           const id = item.filePath.split("/d/")[1]?.split("/")[0]
           return {
             ...item,
@@ -26,13 +30,13 @@ const Gallery = () => {
         }
         return {
           ...item,
-          displayPath: item.filePath
+          displayPath: item.filePath || item.url // handle both property names
         }
       })
-      setItems(formatted)
+      setItems(galleryList)
     } catch (error) {
       console.error('Error fetching gallery:', error)
-      // Fallback for demo
+      // Fallback if collection doesn't exist yet
       setItems([
         { _id: '1', displayPath: 'https://picsum.photos/seed/g1/800/600', title: 'Campus View', category: 'campus' },
         { _id: '2', displayPath: 'https://picsum.photos/seed/g2/800/600', title: 'Sports Day', category: 'sports' },
@@ -42,6 +46,7 @@ const Gallery = () => {
       setLoading(false)
     }
   }
+
 
   if (loading) {
     return (

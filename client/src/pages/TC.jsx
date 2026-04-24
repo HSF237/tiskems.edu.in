@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import axios from 'axios'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { db } from '../config/firebase'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import { FaFilePdf, FaDownload, FaExternalLinkAlt } from 'react-icons/fa'
@@ -17,8 +18,13 @@ const TC = () => {
 
   const fetchTCs = async () => {
     try {
-      const response = await axios.get('/api/tc')
-      setTCs(response.data.data || [])
+      const q = query(collection(db, 'transferCertificates'), orderBy('createdAt', 'desc'))
+      const querySnapshot = await getDocs(q)
+      const tcList = querySnapshot.docs.map(doc => ({
+        _id: doc.id,
+        ...doc.data()
+      }))
+      setTCs(tcList)
     } catch (error) {
       console.error('Error fetching TCs:', error)
     } finally {
@@ -26,23 +32,14 @@ const TC = () => {
     }
   }
 
-  const downloadTC = async (tcId) => {
-    try {
-      const response = await axios.get(`/api/tc/${tcId}/download`, {
-        responseType: 'blob'
-      })
-      const url = window.URL.createObjectURL(new Blob([response.data]))
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', `TC_${tcId}.pdf`)
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      toast.success('TC downloaded successfully')
-    } catch (error) {
-      toast.error('Failed to download TC')
+  const downloadTC = (tc) => {
+    if (tc.link || tc.fileUrl) {
+      window.open(tc.link || tc.fileUrl, '_blank')
+    } else {
+      toast.error('No document available for download')
     }
   }
+
 
   const filteredTCs = tcs.filter((tc) => {
     if (!searchAdmission.trim()) return true

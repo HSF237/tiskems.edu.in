@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
-import axios from 'axios'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { db, storage } from '../config/firebase'
 import { useAuth } from '../context/AuthContext'
 
 const AdminHidden = () => {
@@ -22,16 +24,17 @@ const AdminHidden = () => {
     if (!galleryLink || !galleryTitle) return toast.error('Please enter link and title')
     setLoading(true)
     try {
-      await axios.post('/api/gallery', {
+      await addDoc(collection(db, 'gallery'), {
         title: galleryTitle,
         filePath: galleryLink,
-        category: 'general'
+        category: 'general',
+        createdAt: serverTimestamp()
       })
       setGalleryLink('')
       setGalleryTitle('')
       toast.success('Gallery Image Added to Database')
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to add to database')
+      toast.error('Failed to add to database')
     } finally {
       setLoading(false)
     }
@@ -43,14 +46,18 @@ const AdminHidden = () => {
     }
     setLoading(true)
     try {
-      const formData = new FormData()
-      formData.append('studentName', studentName)
-      formData.append('admissionNumber', admissionNo)
-      formData.append('class', tcClass || 'N/A')
-      formData.append('tcFile', tcFile)
+      // Upload PDF to Firebase Storage
+      const storageRef = ref(storage, `tc_files/${Date.now()}_${tcFile.name}`)
+      const snapshot = await uploadBytes(storageRef, tcFile)
+      const fileUrl = await getDownloadURL(snapshot.ref)
 
-      await axios.post('/api/tc/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      // Save TC record to Firestore
+      await addDoc(collection(db, 'transferCertificates'), {
+        studentName,
+        admissionNumber: admissionNo,
+        class: tcClass || 'N/A',
+        link: fileUrl,
+        createdAt: serverTimestamp()
       })
 
       setTCFile(null)
@@ -59,11 +66,12 @@ const AdminHidden = () => {
       setAdmissionNo('')
       toast.success('TC file uploaded to database')
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to upload TC')
+      toast.error('Failed to upload TC')
     } finally {
       setLoading(false)
     }
   }
+
 
   return (
     <div className="pt-24 min-h-screen bg-gray-100">

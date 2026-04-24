@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaCertificate, FaExternalLinkAlt } from 'react-icons/fa'
-import axios from 'axios'
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from '../config/firebase'
 
 const Certificates = () => {
     const [certs, setCerts] = useState([])
@@ -13,14 +14,19 @@ const Certificates = () => {
 
     const fetchCertificates = async () => {
         try {
-            const response = await axios.get('/api/certificates')
-            setCerts(response.data.data)
+            const querySnapshot = await getDocs(collection(db, 'certificates'))
+            const certList = querySnapshot.docs.map(doc => ({
+                _id: doc.id,
+                ...doc.data()
+            }))
+            setCerts(certList)
         } catch (error) {
             console.error('Error fetching certificates:', error)
         } finally {
             setLoading(false)
         }
     }
+
 
     return (
         <div className="pt-24 min-h-screen bg-gray-50">

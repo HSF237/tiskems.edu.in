@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import axios from 'axios'
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from '../../config/firebase'
 import { FaUsers, FaGraduationCap, FaRupeeSign, FaFileAlt, FaChartLine } from 'react-icons/fa'
 
 const AdminDashboard = () => {
@@ -17,18 +18,23 @@ const AdminDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      // Fetch stats from API
-      // For now, using demo data
+      const [studentsSnap, teachersSnap, admissionsSnap, paymentsSnap] = await Promise.all([
+        getDocs(collection(db, 'users')),
+        getDocs(collection(db, 'teachers')),
+        getDocs(collection(db, 'admissions')),
+        getDocs(collection(db, 'payments'))
+      ])
       setStats({
-        students: 450,
-        teachers: 25,
-        admissions: 12,
-        payments: 38000
+        students: studentsSnap.size,
+        teachers: teachersSnap.size,
+        admissions: admissionsSnap.size,
+        payments: paymentsSnap.size
       })
     } catch (error) {
       console.error('Error fetching stats:', error)
     }
   }
+
 
   const statCards = [
     { icon: FaGraduationCap, label: 'Total Students', value: stats.students, color: 'bg-blue-500' },

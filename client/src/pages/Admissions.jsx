@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import axios from 'axios'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { storage, db } from '../config/firebase'
 import toast from 'react-hot-toast'
 import { FaUpload, FaFilePdf, FaCheckCircle } from 'react-icons/fa'
 
@@ -37,19 +39,23 @@ const Admissions = () => {
     setSubmitting(true)
 
     try {
-      const formDataToSend = new FormData()
-      Object.keys(formData).forEach(key => {
-        formDataToSend.append(key, formData[key])
-      })
+      const fileUrls = {}
       
-      Object.keys(files).forEach(key => {
-        if (files[key]) {
-          formDataToSend.append(key, files[key])
+      // Upload files to Firebase Storage
+      for (const [key, file] of Object.entries(files)) {
+        if (file) {
+          const storageRef = ref(storage, `admissions/${Date.now()}_${file.name}`)
+          const snapshot = await uploadBytes(storageRef, file)
+          fileUrls[key] = await getDownloadURL(snapshot.ref)
         }
-      })
+      }
 
-      const response = await axios.post('/api/admissions/apply', formDataToSend, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      // Save application data to Firestore
+      await addDoc(collection(db, 'admissions'), {
+        ...formData,
+        ...fileUrls,
+        status: 'pending',
+        submittedAt: serverTimestamp()
       })
 
       toast.success('Admission application submitted successfully!')
@@ -59,11 +65,13 @@ const Admissions = () => {
       })
       setFiles({ birthCertificate: null, previousMarksheet: null, photo: null, aadhar: null })
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to submit application')
+      console.error("Submission error:", error)
+      toast.error('Failed to submit application')
     } finally {
       setSubmitting(false)
     }
   }
+
 
   return (
     <div className="pt-20 min-h-screen bg-gray-50">

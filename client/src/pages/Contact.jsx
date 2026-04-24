@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaWhatsapp, FaPaperPlane } from 'react-icons/fa'
-import axios from 'axios'
 import toast from 'react-hot-toast'
+
 
 const Contact = () => {
   const [formData, setFormData] = useState({

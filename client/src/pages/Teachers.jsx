@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import axios from 'axios'
+import { collection, query, where, getDocs } from 'firebase/firestore'
+import { db } from '../config/firebase'
 import { FaUserGraduate, FaBookOpen } from 'react-icons/fa'
 
 const Teachers = () => {
@@ -14,15 +15,25 @@ const Teachers = () => {
 
   const fetchTeachers = async () => {
     try {
-      const params = filter !== 'all' ? { subject: filter } : {}
-      const response = await axios.get('/api/teachers', { params })
-      setTeachers(response.data.data)
+      setLoading(true)
+      const teachersRef = collection(db, 'teachers')
+      const q = filter !== 'all' 
+        ? query(teachersRef, where('subject', '==', filter))
+        : teachersRef
+      
+      const querySnapshot = await getDocs(q)
+      const teachersList = querySnapshot.docs.map(doc => ({
+        _id: doc.id,
+        ...doc.data()
+      }))
+      setTeachers(teachersList)
     } catch (error) {
       console.error('Error fetching teachers:', error)
     } finally {
       setLoading(false)
     }
   }
+
 
   const subjects = ['all', 'Mathematics', 'Science', 'English', 'Computer Science', 'Social Studies', 'Hindi', 'Malayalam']
 
