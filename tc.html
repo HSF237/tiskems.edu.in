@@ -570,12 +570,23 @@
         });
     </script>
 
-    <script>
-        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:5001'
-            : 'https://tisk-backend.onrender.com';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-        async function searchTC() {
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3TpeG-wqAIFzngrgFbiiO_dvGYCqp5Og",
+            authDomain: "tisk-ems.firebaseapp.com",
+            projectId: "tisk-ems",
+            storageBucket: "tisk-ems.firebasestorage.app",
+            messagingSenderId: "342838120546",
+            appId: "1:342838120546:web:6a95e194e0f45891a4813b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.searchTC = async function() {
             const input = document.getElementById('searchAdmNo').value.trim();
             const statusFn = document.getElementById('statusMessage');
 
@@ -589,19 +600,20 @@
             statusFn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
 
             try {
-                const res = await fetch(`${API_URL}/api/tc/search/${input}`);
-                const data = await res.json();
+                const q = query(collection(db, 'tcs'), where('admissionNumber', '==', input));
+                const querySnapshot = await getDocs(q);
 
-                if (data.success) {
+                if (!querySnapshot.empty) {
                     statusFn.textContent = "";
-                    const student = data.data;
+                    const student = querySnapshot.docs[0].data();
                     showCertificate(student);
                 } else {
                     statusFn.style.color = '#dc2626';
-                    statusFn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${data.message || 'No TC document found'}`;
+                    statusFn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> No TC document found for this admission number.`;
                     document.getElementById('certificate-container').style.display = 'none';
                 }
             } catch (err) {
+                console.error(err);
                 statusFn.style.color = '#dc2626';
                 statusFn.textContent = "Connection error. Please try again later.";
             }
@@ -611,24 +623,16 @@
             const viewer = document.getElementById('pdfViewer');
             const container = document.getElementById('certificate-container');
 
-            // Set the PDF Reference
             let url = student.pdfPath;
-            if (url && !url.startsWith('http')) {
-                // Extra-robust path cleaning: Extract everything after /uploads/ or uploads/
-                const matches = url.match(/[\\/]?(uploads[\\/].*)/);
-                const relativePath = matches ? matches[1] : url;
-                url = `${API_URL}/${relativePath.replace(/\\/g, '/')}`;
-            }
-
+            
             // Using Google Docs Viewer as a reliable cross-browser way to view PDFs inline
-            // This bypasses issues where the browser might try to download the file instead of viewing it.
             viewer.src = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
 
             container.style.display = 'block';
             container.scrollIntoView({ behavior: 'smooth' });
         }
 
-        function resetSearch() {
+        window.resetSearch = function() {
             document.getElementById('searchAdmNo').value = '';
             document.getElementById('certificate-container').style.display = 'none';
             document.getElementById('pdfViewer').src = '';
@@ -638,7 +642,7 @@
         // Allow Enter Key
         document.getElementById('searchAdmNo').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
-                searchTC();
+                window.searchTC();
             }
         });
     </script>

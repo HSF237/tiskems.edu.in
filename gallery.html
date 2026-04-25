@@ -423,32 +423,41 @@
         </style>
     </footer>
 
-    <script>
-        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://localhost:5001'
-            : 'https://tisk-backend.onrender.com';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3TpeG-wqAIFzngrgFbiiO_dvGYCqp5Og",
+            authDomain: "tisk-ems.firebaseapp.com",
+            projectId: "tisk-ems",
+            storageBucket: "tisk-ems.firebasestorage.app",
+            messagingSenderId: "342838120546",
+            appId: "1:342838120546:web:6a95e194e0f45891a4813b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
         async function loadGallery() {
             const grid = document.getElementById('galleryGrid');
             try {
-                const res = await fetch(`${API_URL}/api/gallery`);
-                const data = await res.json();
+                const q = query(collection(db, 'galleries'), orderBy('createdAt', 'desc'));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    const items = [];
+                    querySnapshot.forEach((doc) => {
+                        items.push({ id: doc.id, ...doc.data() });
+                    });
 
-                if (data.success && data.data.length > 0) {
-                    grid.innerHTML = data.data.map(item => {
-                        let fullPath = item.filePath;
-                        if (fullPath && !fullPath.startsWith('http')) {
-                            // Extra-robust path cleaning for local uploads
-                            const pathMatches = fullPath.match(/[\\/]?(uploads[\\/].*)/);
-                            const relPath = pathMatches ? pathMatches[1] : fullPath;
-                            fullPath = `${API_URL}/${relPath.replace(/\\/g, '/')}`;
-                        }
-
+                    grid.innerHTML = items.map(item => {
+                        const fullPath = item.filePath;
                         return `
                         <div class="gallery-item" data-src="${fullPath}">
-                            <img src="${fullPath}" alt="${item.title}">
+                            <img src="${fullPath}" alt="${item.title || 'Gallery Image'}">
                             <div class="gallery-overlay">
-                                <div class="gallery-title">${item.title}</div>
+                                <div class="gallery-title">${item.title || 'Campus View'}</div>
                             </div>
                         </div>
                     `}).join('');
@@ -457,9 +466,13 @@
                     bindLightbox();
                     // Re-bind scroll animation
                     bindObserver();
+                } else {
+                    // If no images in Firebase, you might want to keep the placeholders 
+                    // or show a message. For now, we'll just leave it as is.
+                    console.log('No gallery items found in Firestore.');
                 }
             } catch (err) {
-                console.error('Failed to load gallery', err);
+                console.error('Failed to load gallery from Firebase', err);
             }
         }
 
@@ -495,7 +508,7 @@
             });
         }
 
-        function closeLightbox() {
+        window.closeLightbox = function() {
             const lightbox = document.getElementById('lightbox');
             lightbox.classList.remove('active');
             document.body.style.overflow = 'auto';
@@ -503,14 +516,14 @@
 
         document.getElementById('lightbox').addEventListener('click', (e) => {
             if (e.target === document.getElementById('lightbox')) {
-                closeLightbox();
+                window.closeLightbox();
             }
         });
 
         document.addEventListener('keydown', (e) => {
             const lightbox = document.getElementById('lightbox');
             if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-                closeLightbox();
+                window.closeLightbox();
             }
         });
 
