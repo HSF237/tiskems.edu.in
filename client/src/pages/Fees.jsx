@@ -194,8 +194,9 @@ const Fees = () => {
                       <span className="text-lg font-bold text-accent">₹{payment.amount}</span>
                       {payment.status === 'completed' && payment.receiptPath && (
                         <a
-                          href={`/api/fees/receipt/${payment._id}`}
+                          href={payment.receiptUrl || payment.receiptPath || '#'}
                           target="_blank"
+                          rel="noopener noreferrer"
                           className="text-accent hover:underline flex items-center gap-2"
                         >
                           <FaFileDownload /> Receipt
