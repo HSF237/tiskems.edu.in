@@ -477,24 +477,27 @@
 
     <div class="container">
         <!-- SEARCH SECTION -->
-        <div class="form-card" id="searchSection">
+        <div class="form-card" id="searchSection" style="border: 1px solid rgba(0,0,0,0.05); background: linear-gradient(to bottom, #ffffff, #fdfdfd);">
             <div class="form-header">
-                <h2>Student TC Search</h2>
-                <p>Enter your Admission Number to view and download your Transfer Certificate.</p>
+                <div style="display: inline-block; padding: 12px; background: #eff6ff; border-radius: 12px; margin-bottom: 15px; color: var(--accent);">
+                    <i class="fas fa-search-plus fa-2x"></i>
+                </div>
+                <h2>Digital TC Registry</h2>
+                <p>Verify and download official Transfer Certificates instantly.</p>
             </div>
 
-            <div class="form-group" style="max-width: 500px; margin: 0 auto;">
-                <label class="form-label" style="text-align: center;">Admission Number</label>
-                <div style="display: flex; gap: 10px;">
+            <div class="form-group" style="max-width: 500px; margin: 0 auto; position: relative;">
+                <label class="form-label" style="text-align: center; color: #64748b; font-size: 0.8rem;">Enter Admission Number</label>
+                <div style="display: flex; gap: 12px; background: #f1f5f9; padding: 8px; border-radius: 16px; border: 1px solid #e2e8f0;">
                     <input type="text" id="searchAdmNo" class="form-input" placeholder="e.g. 2401"
-                        style="text-align: center; font-size: 1.2rem; letter-spacing: 1px;">
-                    <button class="btn btn-gold" onclick="searchTC()" style="width: auto; padding: 0 25px;">
-                        <i class="fas fa-search"></i>
+                        style="text-align: center; font-size: 1.2rem; letter-spacing: 2px; border: none; background: transparent; padding: 12px;">
+                    <button class="btn btn-gold" onclick="searchTC()" style="width: auto; padding: 0 30px; border-radius: 12px;">
+                        <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
 
-            <div id="statusMessage" style="text-align: center; margin-top: 20px; font-weight: 600; min-height: 24px;">
+            <div id="statusMessage" style="text-align: center; margin-top: 25px; font-weight: 600; min-height: 24px;">
             </div>
         </div>
 
@@ -514,11 +517,33 @@
             </div>
 
             <!-- PDF IFRAME WRAPPER -->
-            <div class="pdf-wrapper"
-                style="background: #e2e8f0; border-radius: 16px; padding: 10px; height: 80vh; max-height: 1200px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                <iframe id="pdfViewer" src=""
-                    style="width: 100%; height: 100%; border: none; border-radius: 8px; background: white;"
-                    title="TC Document"></iframe>
+            <div class="pdf-container-wrapper" style="position: relative;">
+                <div class="pdf-wrapper"
+                    style="background: #1e293b; border-radius: 20px; padding: 12px; height: 85vh; max-height: 1100px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                    
+                    <!-- Decorative Background -->
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), transparent); pointer-events: none;"></div>
+
+                    <iframe id="pdfViewer" src=""
+                        style="width: 100%; height: 100%; border: none; border-radius: 12px; background: white;"
+                        title="TC Document"></iframe>
+                    
+                    <!-- Floating Actions -->
+                    <div class="pdf-actions" style="position: absolute; bottom: 30px; right: 30px; display: flex; gap: 12px; z-index: 10;">
+                        <a id="downloadBtn" href="#" target="_blank" class="btn" style="background: var(--gold); color: var(--primary); width: auto; padding: 12px 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); text-decoration: none;">
+                            <i class="fas fa-external-link-alt"></i> Open in New Tab
+                        </a>
+                    </div>
+                </div>
+
+                <div id="viewerFallback" style="display: none; text-align: center; margin-top: 20px; padding: 30px; background: white; border-radius: 16px; border: 1px dashed #cbd5e1;">
+                    <i class="fas fa-file-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 15px;"></i>
+                    <h3>Unable to display preview inline?</h3>
+                    <p style="color: #64748b; margin-bottom: 20px;">Some browsers or document sources restrict inline viewing.</p>
+                    <a id="fallbackLink" href="#" target="_blank" class="btn btn-gold" style="width: auto; padding: 12px 30px;">
+                        Open PDF Separately
+                    </a>
+                </div>
             </div>
 
         </div>
@@ -622,13 +647,34 @@
         function showCertificate(student) {
             const viewer = document.getElementById('pdfViewer');
             const container = document.getElementById('certificate-container');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const fallbackLink = document.getElementById('fallbackLink');
 
             let url = student.pdfPath;
+
+            // Handle Google Drive links to ensure they are viewable
+            if (url.includes('drive.google.com')) {
+                // Convert /view or /edit links to /preview which is more iframe-friendly
+                url = url.replace(/\/view(\?.*)?$/, '/preview');
+                url = url.replace(/\/edit(\?.*)?$/, '/preview');
+            }
+            
+            // Set the download/external link
+            downloadBtn.href = url;
+            fallbackLink.href = url;
             
             // Using Google Docs Viewer as a reliable cross-browser way to view PDFs inline
+            // We use a slight delay to ensure smooth transition
             viewer.src = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
 
             container.style.display = 'block';
+            
+            // Show fallback notice after 5 seconds if the user is still staring at a potentially empty viewer
+            // (We can't reliably detect iframe load failure across domains)
+            setTimeout(() => {
+                document.getElementById('viewerFallback').style.display = 'block';
+            }, 6000);
+
             container.scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -637,6 +683,7 @@
             document.getElementById('certificate-container').style.display = 'none';
             document.getElementById('pdfViewer').src = '';
             document.getElementById('statusMessage').textContent = '';
+            document.getElementById('viewerFallback').style.display = 'none';
         }
 
         // Allow Enter Key
