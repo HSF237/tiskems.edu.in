@@ -220,18 +220,17 @@
 
         /* --- ORIGINAL HERO BANNER STYLES --- */
         .page-hero {
-            /* Restored original gradient and layout */
-            background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
+            background:
+                radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.26), transparent 34rem),
+                linear-gradient(135deg, #0b1730 0%, #142d5e 55%, #1e3a8a 100%);
             color: white;
-            padding: 150px 5% 100px;
+            padding: 132px 24px 92px;
             text-align: center;
             position: relative;
             overflow: hidden;
             margin-top: 70px;
-            /* Account for fixed nav */
         }
 
-        /* Restored original SVG pattern overlay */
         .page-hero::before {
             content: '';
             position: absolute;
@@ -240,24 +239,51 @@
             right: 0;
             bottom: 0;
             background: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.1'%3E%3Ccircle cx='50' cy='50' r='40' stroke='white' fill='none'/%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.1;
+            opacity: 0.18;
+            pointer-events: none;
+        }
+
+        .hero-eyebrow,
+        .section-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #2563eb;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .hero-eyebrow {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 18px;
+            padding: 8px 13px;
+            color: #dbeafe;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
         }
 
         .page-hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
+            color: white;
+            font-size: clamp(2.4rem, 5vw, 4rem);
+            line-height: 1.08;
+            margin-bottom: 18px;
             position: relative;
             z-index: 2;
             animation: fadeUp 0.8s ease-out;
         }
 
         .page-hero p {
-            font-size: 1.2rem;
+            color: #dbeafe;
+            font-size: 1.1rem;
+            line-height: 1.7;
             position: relative;
             z-index: 2;
-            opacity: 0.95;
             animation: fadeUp 0.8s ease-out 0.2s backwards;
-            max-width: 600px;
+            max-width: 640px;
             margin: 0 auto;
         }
 
@@ -270,8 +296,8 @@
 
         .section-head {
             text-align: center;
-            margin-bottom: 60px;
-            margin-top: 80px;
+            margin-bottom: 36px;
+            margin-top: 68px;
             position: relative;
         }
 
@@ -293,6 +319,69 @@
             background: linear-gradient(90deg, var(--accent), var(--gold));
             margin: 20px auto 0;
             border-radius: 2px;
+        }
+
+        .disclosure-main {
+            padding: 0 0 72px;
+            background:
+                radial-gradient(ellipse at 12% 10%, rgba(219, 234, 254, 0.65), transparent 36rem),
+                #f8fafc;
+        }
+
+        .disclosure-intro {
+            position: relative;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            gap: 22px;
+            max-width: 900px;
+            margin: -38px auto 0;
+            padding: 28px 32px;
+            background: rgba(255, 255, 255, 0.97);
+            border: 1px solid #e6edf7;
+            border-radius: 20px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.1);
+            z-index: 3;
+        }
+
+        .disclosure-intro-icon {
+            display: grid;
+            width: 58px;
+            height: 58px;
+            place-items: center;
+            color: #2563eb;
+            background: #eff6ff;
+            border-radius: 17px;
+            font-size: 1.4rem;
+        }
+
+        .disclosure-intro h2 {
+            margin-bottom: 6px;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .disclosure-intro p {
+            color: #52627a;
+            font-size: 0.96rem;
+            line-height: 1.65;
+        }
+
+        .disclosure-main > .container > section {
+            padding-top: 2px;
+        }
+
+        .doc-repository {
+            margin-top: 16px;
+            padding: 0 0 8px;
+        }
+
+        .doc-repository .section-head {
+            margin-top: 72px;
+        }
+
+        .doc-repository .section-head h2 {
+            margin-top: 10px;
         }
 
         /* --- Creative Data Cards --- */
@@ -473,106 +562,100 @@
         /* --- Document Grid --- */
         .doc-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
-            padding-bottom: 80px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+            padding-bottom: 28px;
         }
 
         .doc-card {
             background: white;
-            border-radius: var(--radius-md);
-            padding: 0;
+            border-radius: 18px;
+            padding: 24px;
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 5px 18px rgba(15, 23, 42, 0.045);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
             cursor: pointer;
-            border: 1px solid #f1f5f9;
+            border: 1px solid #e7edf5;
             position: relative;
             display: flex;
-            flex-direction: column;
-            height: 100%;
+            align-items: flex-start;
+            gap: 17px;
+            min-height: 166px;
+            color: inherit;
+            font: inherit;
+            text-align: left;
+        }
+
+        .doc-card:focus-visible {
+            outline: 3px solid rgba(37, 99, 235, 0.45);
+            outline-offset: 3px;
         }
 
         .doc-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-colored);
-            border-color: var(--accent-light);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.1);
+            border-color: #bfdbfe;
         }
 
         .doc-icon-area {
-            height: 140px;
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            width: 50px;
+            height: 50px;
+            flex: 0 0 50px;
+            border-radius: 15px;
+            background: #eff6ff;
+            color: #2563eb;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .doc-card:hover .doc-icon-area {
-            background: var(--primary);
-        }
-
-        .doc-card:hover .doc-icon-area i {
-            color: var(--white);
-            transform: scale(1.1) rotate(-5deg);
+            transition: background 0.25s ease, color 0.25s ease;
         }
 
         .doc-icon-area i {
-            font-size: 3.5rem;
-            color: var(--accent);
-            transition: all 0.4s ease;
-            z-index: 2;
+            font-size: 1.2rem;
         }
 
-        .doc-icon-area::after {
-            content: '';
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            top: -50px;
-            left: -50px;
-            z-index: 1;
+        .doc-card:hover .doc-icon-area {
+            color: white;
+            background: #2563eb;
         }
 
         .doc-content {
-            padding: 24px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            align-items: flex-start;
+            min-width: 0;
+            min-height: 116px;
         }
 
         .doc-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-size: 1.05rem;
+            line-height: 1.35;
+            margin: 2px 0 8px;
             color: var(--primary);
         }
 
         .doc-card p {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            margin-bottom: 20px;
-            line-height: 1.5;
+            font-size: 0.88rem;
+            color: #64748b;
+            margin-bottom: 18px;
+            line-height: 1.6;
             flex-grow: 1;
         }
 
         .doc-link {
-            color: var(--accent);
+            color: #2563eb;
             font-weight: 700;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-size: 0.83rem;
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: gap 0.2s ease;
+            transition: gap 0.2s ease, color 0.2s ease;
         }
 
         .doc-card:hover .doc-link {
-            gap: 14px;
+            gap: 11px;
+            color: #1d4ed8;
         }
 
         /* --- Footer --- */
@@ -794,102 +877,187 @@
         /* --- Mobile Responsive --- */
         @media (max-width: 900px) {
             .page-hero {
-                padding: 60px 5% 40px;
+                padding: 104px 24px 76px;
                 margin-top: 55px;
             }
+
             .page-hero h1 {
-                font-size: 1.4rem;
-                margin-bottom: 10px;
+                font-size: clamp(2.1rem, 7vw, 3rem);
             }
+
             .page-hero p {
-                font-size: 0.85rem;
-                max-width: 280px;
+                font-size: 1rem;
+                max-width: 520px;
             }
+
+            .disclosure-intro {
+                margin-top: -28px;
+                padding: 24px;
+            }
+
+            .doc-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 16px;
+            }
+
             .section-head {
-                margin-top: 40px;
-                margin-bottom: 30px;
+                margin-top: 52px;
+                margin-bottom: 28px;
             }
+
             .section-head h2 {
-                font-size: 1.6rem;
+                font-size: clamp(1.5rem, 5.5vw, 2rem);
             }
+
             .data-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
+                gap: 16px;
                 margin-bottom: 40px;
             }
+
             .info-card {
-                padding: 20px 15px;
+                padding: 26px 18px;
             }
+
             .info-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.3rem;
-                margin-bottom: 10px;
+                width: 58px;
+                height: 58px;
+                font-size: 1.4rem;
+                margin-bottom: 14px;
             }
+
             .info-card .number {
-                font-size: 1.5rem;
+                font-size: 1.9rem;
             }
+
             .info-card .label {
-                font-size: 0.75rem;
+                font-size: 0.82rem;
             }
+
             .staff-table th, .staff-table td {
                 padding: 12px 15px;
                 font-size: 0.85rem;
             }
-            .doc-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 12px !important;
-            }
-            .doc-card {
-                padding: 20px 10px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                justify-content: center;
-            }
-            .doc-icon-area {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-                border-radius: 50%;
-                margin-bottom: 12px;
-                flex-shrink: 0;
-            }
-            .doc-icon-area::after {
-                display: none; /* Hide background circle overlay on mobile */
-            }
-            .doc-content {
-                padding: 0;
-                width: 100%;
-            }
-            .doc-content h3 {
-                font-size: 0.85rem;
-                margin-bottom: 10px;
-                min-height: 2.4em; /* Ensure uniform title height */
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .doc-content p {
-                display: none; /* Keep hidden on mobile */
-            }
-            .doc-link {
-                justify-content: center;
-                font-size: 0.7rem;
-                gap: 6px;
-            }
-            .doc-card:hover .doc-link {
-                gap: 10px;
-            }
+
             .modal-content-wrapper {
                 width: 95%;
             }
+
             .modal-header {
                 padding: 15px 20px;
             }
+
             .modal-title {
                 font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .page-hero {
+                padding: 90px 20px 64px;
+            }
+
+            .page-hero h1 {
+                width: 100%;
+                max-width: 100%;
+                font-size: clamp(1.35rem, 6vw, 1.8rem);
+                text-wrap: balance;
+                overflow-wrap: anywhere;
+            }
+
+            .page-hero p {
+                width: 100%;
+                max-width: 100%;
+                padding: 0 8px;
+                overflow-wrap: anywhere;
+            }
+
+            .hero-eyebrow {
+                margin-bottom: 14px;
+                font-size: 0.66rem;
+            }
+
+            .disclosure-intro {
+                grid-template-columns: 1fr;
+                gap: 14px;
+                margin: -22px 0 0;
+                padding: 21px;
+                text-align: center;
+                width: 100%;
+                min-width: 0;
+            }
+
+            .disclosure-intro > div:last-child {
+                min-width: 0;
+            }
+
+            .disclosure-intro-icon {
+                width: 48px;
+                height: 48px;
+                margin: 0 auto;
+                border-radius: 14px;
+                font-size: 1.2rem;
+            }
+
+            .disclosure-intro h2 {
+                font-size: 1.08rem;
+            }
+
+            .disclosure-intro p {
+                font-size: 0.88rem;
+                overflow-wrap: anywhere;
+            }
+
+            .container {
+                padding-right: 18px;
+                padding-left: 18px;
+            }
+
+            .doc-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .doc-card {
+                min-height: 0;
+                padding: 18px;
+                gap: 14px;
+            }
+
+            .doc-icon-area {
+                width: 44px;
+                height: 44px;
+                flex-basis: 44px;
+                border-radius: 13px;
+            }
+
+            .doc-content {
+                min-height: 0;
+            }
+
+            .doc-card h3 {
+                font-size: 0.98rem;
+            }
+
+            .doc-card p {
+                display: block;
+                margin-bottom: 12px;
+                font-size: 0.83rem;
+            }
+
+            .doc-repository .section-head {
+                margin-top: 54px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -919,21 +1087,22 @@
         </ul>
     </nav>
 
-    <!-- ORIGINAL HERO SECTION -->
     <section class="page-hero">
+        <span class="hero-eyebrow"><i class="fas fa-shield-alt"></i> TISK English Medium School</span>
         <h1>Mandatory Disclosure</h1>
-        <p>Official Government Approved Documents & Certificates</p>
+        <p>Explore our school information, campus facilities, faculty statistics, and official certificates.</p>
     </section>
 
-    <main>
+    <main class="disclosure-main">
         <!-- Intro -->
         <div class="container reveal">
-            <div class="doc-intro"
-                style="max-width: 800px; margin: 0 auto 60px; text-align: center; color: var(--text-main); background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid #f1f5f9;">
-                <h3 style="margin-bottom: 10px;"><i class="fas fa-shield-alt"
-                        style="color: var(--gold); margin-right: 8px;"></i> CBSE Mandatory Disclosure</h3>
-                <p style="color: var(--text-light);">Detailed information regarding Teaching Staff, Infrastructure,
-                    Results, and Statutory Documents as per CBSE norms.</p>
+            <div class="disclosure-intro">
+                <div class="disclosure-intro-icon" aria-hidden="true"><i class="fas fa-shield-alt"></i></div>
+                <div>
+                    <h2>CBSE Mandatory Disclosure</h2>
+                    <p>Detailed information about teaching staff, infrastructure, results, and statutory documents in
+                        accordance with CBSE norms.</p>
+                </div>
             </div>
         </div>
 
@@ -1017,16 +1186,18 @@
         </section>
 
         <!-- Document Portal -->
-        <section class="container" style="margin-top: 80px;">
+        <section class="container doc-repository">
             <div class="section-head reveal">
+                <span class="section-eyebrow">Official records</span>
                 <h2>Document Repository</h2>
-                <p>Access certified statutory documents and government approvals.</p>
+                <p>View and download the school’s statutory certificates and approvals.</p>
                 <div class="divider"></div>
             </div>
 
             <div class="doc-grid reveal">
                 <!-- Building -->
-                <div class="doc-card" onclick="openDocument('building')">
+                <div class="doc-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="docModal"
+                    data-document="building" onclick="openDocument('building')">
                     <div class="doc-icon-area">
                         <i class="fas fa-building"></i>
                     </div>
@@ -1038,7 +1209,8 @@
                 </div>
 
                 <!-- Fire -->
-                <div class="doc-card" onclick="openDocument('fire')">
+                <div class="doc-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="docModal"
+                    data-document="fire" onclick="openDocument('fire')">
                     <div class="doc-icon-area">
                         <i class="fas fa-fire-extinguisher"></i>
                     </div>
@@ -1050,7 +1222,8 @@
                 </div>
 
                 <!-- Water -->
-                <div class="doc-card" onclick="openDocument('water')">
+                <div class="doc-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="docModal"
+                    data-document="water" onclick="openDocument('water')">
                     <div class="doc-icon-area">
                         <i class="fas fa-hand-holding-water"></i>
                     </div>
@@ -1061,9 +1234,10 @@
                     </div>
                 </div>
 
-                <div class="doc-card" onclick="openDocument('affiliation')">
-                    <div class="doc-icon-area" style="background: #eef2ff;">
-                        <i class="fas fa-file-alt" style="color: #4f46e5;"></i>
+                <div class="doc-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="docModal"
+                    data-document="affiliation" onclick="openDocument('affiliation')">
+                    <div class="doc-icon-area">
+                        <i class="fas fa-file-alt"></i>
                     </div>
                     <div class="doc-content">
                         <h3>CBSE Affiliation</h3>
@@ -1073,9 +1247,10 @@
                 </div>
 
                 <!-- Class X Results -->
-                <div class="doc-card" onclick="openDocument('result')">
-                    <div class="doc-icon-area" style="background: #ecfdf5;">
-                        <i class="fas fa-file-invoice" style="color: #10b981;"></i>
+                <div class="doc-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="docModal"
+                    data-document="result" onclick="openDocument('result')">
+                    <div class="doc-icon-area">
+                        <i class="fas fa-file-invoice"></i>
                     </div>
                     <div class="doc-content">
                         <h3>Class X Results</h3>
@@ -1085,9 +1260,10 @@
                 </div>
 
                 <!-- Society -->
-                <div class="doc-card" onclick="openDocument('society')">
-                    <div class="doc-icon-area" style="background: #fffbeb;">
-                        <i class="fas fa-users" style="color: #f59e0b;"></i>
+                <div class="doc-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="docModal"
+                    data-document="society" onclick="openDocument('society')">
+                    <div class="doc-icon-area">
+                        <i class="fas fa-users"></i>
                     </div>
                     <div class="doc-content">
                         <h3>Society Registration</h3>
@@ -1095,6 +1271,7 @@
                         <span class="doc-link">View File <i class="fas fa-arrow-right"></i></span>
                     </div>
                 </div>
+            </div>
         </section>
     </main>
 
@@ -1136,11 +1313,13 @@
     </footer>
 
     <!-- Modal -->
-    <div id="docModal" class="modal">
+    <div id="docModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-content-wrapper">
             <div class="modal-header">
                 <h2 id="modalTitle" class="modal-title">Document Name</h2>
-                <button class="close-btn" onclick="closeDocument()"><i class="fas fa-times"></i></button>
+                <button class="close-btn" onclick="closeDocument()" aria-label="Close document">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <div id="modalBodyContent">
@@ -1148,7 +1327,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
     <script>
@@ -1209,6 +1387,15 @@
 
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+        document.querySelectorAll('.doc-card').forEach(card => {
+            card.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    openDocument(card.dataset.document);
+                }
+            });
+        });
+
         // --- Modal Logic ---
         const modal = document.getElementById("docModal");
         const modalTitle = document.getElementById("modalTitle");
@@ -1257,6 +1444,10 @@
         window.onclick = function (event) {
             if (event.target == modal) closeDocument();
         }
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && modal.classList.contains('show')) closeDocument();
+        });
 
         // --- Mobile Menu ---
         function toggleMenu() {
