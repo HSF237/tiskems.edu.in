@@ -336,70 +336,7 @@
 
     <div class="container">
 
-        <div class="gallery-grid" id="galleryGrid">
-            <div class="gallery-item" data-src="https://picsum.photos/seed/g1/800/600">
-                <img src="https://picsum.photos/seed/g1/400/300" alt="Gallery Image">
-                <div class="gallery-overlay">
-                    <div class="gallery-title">Campus View</div>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-src="https://picsum.photos/seed/g2/800/600">
-                <img src="https://picsum.photos/seed/g2/400/300" alt="Gallery Image">
-                <div class="gallery-overlay">
-                    <div class="gallery-title">Sports Day</div>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-src="https://picsum.photos/seed/g3/800/600">
-                <img src="https://picsum.photos/seed/g3/400/300" alt="Gallery Image">
-                <div class="gallery-overlay">
-                    <div class="gallery-title">Science Fair</div>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-src="https://picsum.photos/seed/g4/800/600">
-                <img src="https://picsum.photos/seed/g4/400/300" alt="Gallery Image">
-                <div class="gallery-overlay">
-                    <div class="gallery-title">Cultural Event</div>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-src="https://picsum.photos/seed/g5/800/600">
-                <img src="https://picsum.photos/seed/g5/400/300" alt="Gallery Image">
-                <div class="gallery-overlay">
-                    <div class="gallery-title">Annual Day</div>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-src="https://picsum.photos/seed/g6/800/600">
-                <img src="https://picsum.photos/seed/g6/400/300" alt="Gallery Image">
-                <div class="gallery-overlay">
-                    <div class="gallery-title">Classroom</div>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-src="https://picsum.photos/seed/g7/800/600">
-                <img src="https://picsum.photos/seed/g7/400/300" alt="Gallery Image">
-                <div class="gallery-overlay">
-                    <div class="gallery-title">Library</div>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-src="https://picsum.photos/seed/g8/800/600">
-                <img src="https://picsum.photos/seed/g8/400/300" alt="Gallery Image">
-                <div class="gallery-overlay">
-                    <div class="gallery-title">Assembly</div>
-                </div>
-            </div>
-
-            <div class="gallery-item" data-src="https://picsum.photos/seed/g9/800/600">
-                <img src="https://picsum.photos/seed/g9/400/300" alt="Gallery Image">
-                <div class="gallery-overlay">
-                    <div class="gallery-title">Award Ceremony</div>
-                </div>
-            </div>
-        </div>
+        <div class="gallery-grid" id="galleryGrid"></div>
     </div>
 
     <!-- Lightbox -->
@@ -438,9 +375,39 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const grid = document.getElementById('galleryGrid');
+        const localGalleryItems = Array.from({ length: 21 }, (_, index) => {
+            const number = String(index + 1).padStart(2, '0');
+            return {
+                filePath: `images/gallery/school-moment-${number}.jpeg`,
+                title: `School Moment ${number}`
+            };
+        });
+
+        function createGalleryItem(item) {
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            galleryItem.dataset.src = item.filePath;
+
+            const image = document.createElement('img');
+            image.src = item.filePath;
+            image.alt = item.title || 'Gallery Image';
+            galleryItem.appendChild(image);
+
+            const overlay = document.createElement('div');
+            overlay.className = 'gallery-overlay';
+            const title = document.createElement('div');
+            title.className = 'gallery-title';
+            title.textContent = item.title || 'Campus View';
+            overlay.appendChild(title);
+            galleryItem.appendChild(overlay);
+
+            return galleryItem;
+        }
+
+        localGalleryItems.forEach(item => grid.appendChild(createGalleryItem(item)));
 
         async function loadGallery() {
-            const grid = document.getElementById('galleryGrid');
             try {
                 const q = query(collection(db, 'galleries'), orderBy('createdAt', 'desc'));
                 const querySnapshot = await getDocs(q);
@@ -451,28 +418,15 @@
                         items.push({ id: doc.id, ...doc.data() });
                     });
 
-                    grid.innerHTML = items.map(item => {
-                        const fullPath = item.filePath;
-                        return `
-                        <div class="gallery-item" data-src="${fullPath}">
-                            <img src="${fullPath}" alt="${item.title || 'Gallery Image'}">
-                            <div class="gallery-overlay">
-                                <div class="gallery-title">${item.title || 'Campus View'}</div>
-                            </div>
-                        </div>
-                    `}).join('');
-
-                    // Re-bind click events
-                    bindLightbox();
-                    // Re-bind scroll animation
-                    bindObserver();
+                    items.forEach(item => grid.appendChild(createGalleryItem(item)));
                 } else {
-                    // If no images in Firebase, you might want to keep the placeholders 
-                    // or show a message. For now, we'll just leave it as is.
-                    console.log('No gallery items found in Firestore.');
+                    console.log('No additional gallery items found in Firestore.');
                 }
             } catch (err) {
                 console.error('Failed to load gallery from Firebase', err);
+            } finally {
+                bindLightbox();
+                bindObserver();
             }
         }
 
