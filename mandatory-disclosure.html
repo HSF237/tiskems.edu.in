@@ -243,8 +243,7 @@
             pointer-events: none;
         }
 
-        .hero-eyebrow,
-        .section-eyebrow {
+        .hero-eyebrow {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -321,6 +320,11 @@
             border-radius: 2px;
         }
 
+        .doc-repository-section > .section-head {
+            margin-top: 80px;
+            margin-bottom: 60px;
+        }
+
         .disclosure-main {
             padding: 0 0 72px;
             background:
@@ -369,19 +373,6 @@
 
         .disclosure-main > .container > section {
             padding-top: 2px;
-        }
-
-        .doc-repository {
-            margin-top: 16px;
-            padding: 0 0 8px;
-        }
-
-        .doc-repository .section-head {
-            margin-top: 72px;
-        }
-
-        .doc-repository .section-head h2 {
-            margin-top: 10px;
         }
 
         /* --- Creative Data Cards --- */
@@ -562,100 +553,106 @@
         /* --- Document Grid --- */
         .doc-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 22px;
-            padding-bottom: 28px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding-bottom: 80px;
         }
 
         .doc-card {
             background: white;
-            border-radius: 18px;
-            padding: 24px;
+            border-radius: var(--radius-md);
+            padding: 0;
             overflow: hidden;
-            box-shadow: 0 5px 18px rgba(15, 23, 42, 0.045);
-            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             cursor: pointer;
-            border: 1px solid #e7edf5;
+            border: 1px solid #f1f5f9;
             position: relative;
             display: flex;
-            align-items: flex-start;
-            gap: 17px;
-            min-height: 166px;
-            color: inherit;
-            font: inherit;
-            text-align: left;
-        }
-
-        .doc-card:focus-visible {
-            outline: 3px solid rgba(37, 99, 235, 0.45);
-            outline-offset: 3px;
+            flex-direction: column;
+            height: 100%;
         }
 
         .doc-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 34px rgba(15, 23, 42, 0.1);
-            border-color: #bfdbfe;
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-colored);
+            border-color: var(--accent-light);
         }
 
         .doc-icon-area {
-            width: 50px;
-            height: 50px;
-            flex: 0 0 50px;
-            border-radius: 15px;
-            background: #eff6ff;
-            color: #2563eb;
+            height: 140px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.25s ease, color 0.25s ease;
-        }
-
-        .doc-icon-area i {
-            font-size: 1.2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .doc-card:hover .doc-icon-area {
-            color: white;
-            background: #2563eb;
+            background: var(--primary);
+        }
+
+        .doc-card:hover .doc-icon-area i {
+            color: var(--white);
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .doc-icon-area i {
+            font-size: 3.5rem;
+            color: var(--accent);
+            transition: all 0.4s ease;
+            z-index: 2;
+        }
+
+        .doc-icon-area::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -50px;
+            left: -50px;
+            z-index: 1;
         }
 
         .doc-content {
+            padding: 24px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            min-width: 0;
-            min-height: 116px;
         }
 
         .doc-card h3 {
-            font-size: 1.05rem;
-            line-height: 1.35;
-            margin: 2px 0 8px;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
             color: var(--primary);
         }
 
         .doc-card p {
-            font-size: 0.88rem;
-            color: #64748b;
-            margin-bottom: 18px;
-            line-height: 1.6;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            line-height: 1.5;
             flex-grow: 1;
         }
 
         .doc-link {
-            color: #2563eb;
+            color: var(--accent);
             font-weight: 700;
-            font-size: 0.83rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: gap 0.2s ease, color 0.2s ease;
+            transition: gap 0.2s ease;
         }
 
         .doc-card:hover .doc-link {
-            gap: 11px;
-            color: #1d4ed8;
+            gap: 14px;
         }
 
         /* --- Footer --- */
@@ -896,13 +893,72 @@
             }
 
             .doc-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 16px;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+
+            .doc-card {
+                padding: 20px 10px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                justify-content: center;
+            }
+
+            .doc-icon-area {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+                border-radius: 50%;
+                margin-bottom: 12px;
+                flex-shrink: 0;
+            }
+
+            .doc-icon-area::after {
+                display: none;
+            }
+
+            .doc-content {
+                padding: 0;
+                width: 100%;
+            }
+
+            .doc-content h3 {
+                font-size: 0.85rem;
+                margin-bottom: 10px;
+                min-height: 2.4em;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .doc-content p {
+                display: none;
+            }
+
+            .doc-link {
+                justify-content: center;
+                font-size: 0.7rem;
+                gap: 6px;
+            }
+
+            .doc-card:hover .doc-link {
+                gap: 10px;
             }
 
             .section-head {
                 margin-top: 52px;
                 margin-bottom: 28px;
+            }
+
+            .doc-repository-section > .section-head {
+                margin-top: 40px;
+                margin-bottom: 30px;
+            }
+
+            .doc-repository-section > .section-head h2 {
+                font-size: 1.6rem;
             }
 
             .section-head h2 {
@@ -1018,36 +1074,6 @@
                 gap: 12px;
             }
 
-            .doc-card {
-                min-height: 0;
-                padding: 18px;
-                gap: 14px;
-            }
-
-            .doc-icon-area {
-                width: 44px;
-                height: 44px;
-                flex-basis: 44px;
-                border-radius: 13px;
-            }
-
-            .doc-content {
-                min-height: 0;
-            }
-
-            .doc-card h3 {
-                font-size: 0.98rem;
-            }
-
-            .doc-card p {
-                display: block;
-                margin-bottom: 12px;
-                font-size: 0.83rem;
-            }
-
-            .doc-repository .section-head {
-                margin-top: 54px;
-            }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1186,11 +1212,10 @@
         </section>
 
         <!-- Document Portal -->
-        <section class="container doc-repository">
+        <section class="container doc-repository-section" style="margin-top: 80px;">
             <div class="section-head reveal">
-                <span class="section-eyebrow">Official records</span>
                 <h2>Document Repository</h2>
-                <p>View and download the school’s statutory certificates and approvals.</p>
+                <p>Access certified statutory documents and government approvals.</p>
                 <div class="divider"></div>
             </div>
 
@@ -1236,8 +1261,8 @@
 
                 <div class="doc-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="docModal"
                     data-document="affiliation" onclick="openDocument('affiliation')">
-                    <div class="doc-icon-area">
-                        <i class="fas fa-file-alt"></i>
+                    <div class="doc-icon-area" style="background: #eef2ff;">
+                        <i class="fas fa-file-alt" style="color: #4f46e5;"></i>
                     </div>
                     <div class="doc-content">
                         <h3>CBSE Affiliation</h3>
@@ -1249,8 +1274,8 @@
                 <!-- Class X Results -->
                 <div class="doc-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="docModal"
                     data-document="result" onclick="openDocument('result')">
-                    <div class="doc-icon-area">
-                        <i class="fas fa-file-invoice"></i>
+                    <div class="doc-icon-area" style="background: #ecfdf5;">
+                        <i class="fas fa-file-invoice" style="color: #10b981;"></i>
                     </div>
                     <div class="doc-content">
                         <h3>Class X Results</h3>
@@ -1262,8 +1287,8 @@
                 <!-- Society -->
                 <div class="doc-card" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="docModal"
                     data-document="society" onclick="openDocument('society')">
-                    <div class="doc-icon-area">
-                        <i class="fas fa-users"></i>
+                    <div class="doc-icon-area" style="background: #fffbeb;">
+                        <i class="fas fa-users" style="color: #f59e0b;"></i>
                     </div>
                     <div class="doc-content">
                         <h3>Society Registration</h3>
